@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-teal: #003D3C;
+  --accent-gold: #F6C447;
+  --accent-gold-light: #FFD54F;
+  --accent-gold-dark: #D4A129;
+}
+
+/* Brand-specific styles */
+.text-brand {
+  color: var(--brand-teal);
+}
+
+.bg-brand {
+  background-color: var(--brand-teal);
+}
+
+.btn-brand {
+  @apply text-white font-medium px-4 py-2 rounded-lg transition-colors;
+  background-color: var(--brand-teal);
+}
+.btn-brand:hover {
+  background-color: #002b2a;
+}
+
+.btn-accent {
+  @apply text-brand font-medium px-4 py-2 rounded-lg transition-colors;
+  background-color: var(--accent-gold);
+}
+.btn-accent:hover {
+  background-color: var(--accent-gold-dark);
+}
+
+.btn-cta {
+  @apply text-brand font-medium px-4 py-2 rounded-lg transition-colors;
+  background-color: var(--accent-gold-light);
+}
+.btn-cta:hover {
+  background-color: var(--accent-gold);
+}
+
+/* Map styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-div-icon {
+  background: none;
+  border: none;
+}
+
+/* Animation styles */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-slide-out {
+  animation: slide-out 0.3s ease-in;
+}
+
+/* PDF viewer styles */
+.react-pdf__Page {
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.react-pdf__Page__canvas {
+  border-radius: 8px;
+}
