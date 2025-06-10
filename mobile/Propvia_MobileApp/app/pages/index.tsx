@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { Link } from "expo-router";
 {/*
     This file is the main entry point for mobile version of the Propvia website.
     It is used to render the main page of the website and allow access to any other pages the website may have.
@@ -12,7 +13,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen</Text>
+      <Text>This is the home screen</Text>
     </View>
   );
 }
