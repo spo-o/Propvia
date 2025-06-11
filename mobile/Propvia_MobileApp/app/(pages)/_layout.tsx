@@ -3,13 +3,12 @@
   If you want to change the aspects of the pages, you should do so here.
   THIS LAYOUT FILE SHOULD BE USED FOR PAGE-LEVEL CHANGES ONLY.
 */}
-import { Pages } from 'expo-router';
+import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
 
 export default function TabLayout() {
   return (
-    <Pages
+    <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#ffd33d',
         headerStyle: {
@@ -22,8 +21,7 @@ export default function TabLayout() {
         },
       }}
     >
-
-      <Pages.Screen
+      <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
@@ -32,16 +30,16 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Pages.Screen
+      <Tabs.Screen
         name="about"
         options={{
           title: 'About',
           tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24} />
           ),
         }}
       />
-    </Pages>
+    </Tabs>
   );
 }
 
