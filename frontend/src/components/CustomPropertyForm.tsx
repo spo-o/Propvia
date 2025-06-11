@@ -38,6 +38,8 @@ export default function CustomPropertyForm({ open, onOpenChange }: CustomPropert
   const [isProcessing, setIsProcessing] = useState(false);
   const showToast = useToastStore(state => state.showToast);
 
+
+  // Backend Logic Found: Refactor to send form data to backend API instead of using localStorage
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

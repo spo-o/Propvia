@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'; // Backend Logic Found 
 import { useNavigate } from 'react-router-dom';
 import { Users, Mail, FileText, BarChart, Settings, Download, Edit, Trash2, Plus } from 'lucide-react';
 import { useToastStore } from '../store/toastStore';
 import * as Dialog from '@radix-ui/react-dialog';
 
+// Backend Logic Found
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -82,7 +83,7 @@ export default function AdminPortal() {
       setLoading(false);
     }
   };
-
+  
   const generateBlogContent = async () => {
     if (!blogTitle) {
       showToast('Please enter a blog title', 'error');
