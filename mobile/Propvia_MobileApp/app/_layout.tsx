@@ -7,8 +7,21 @@ import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="(pages)" options={{ title: "Propvia", headerShown: true }} />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#0B4740',
+        },
+        headerShadowVisible: false,
+        headerTintColor: '#fff',
+      }}
+    >
+      <Stack.Screen 
+        name="pages"
+        options={{ title: '', headerShown: true }} />
+      <Stack.Screen 
+        name="index"
+        options={{ title: 'Propvia', headerShown: true }} />
     </Stack>
   );
 }

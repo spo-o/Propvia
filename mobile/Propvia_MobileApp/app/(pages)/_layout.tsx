@@ -3,43 +3,38 @@
   If you want to change the aspects of the pages, you should do so here.
   THIS LAYOUT FILE SHOULD BE USED FOR PAGE-LEVEL CHANGES ONLY.
 */}
-import { Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function TabLayout() {
+export default function PageLayout() {
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: '#ffd33d',
         headerStyle: {
           backgroundColor: '#25292e',
         },
         headerShadowVisible: false,
         headerTintColor: '#fff',
-        tabBarStyle: {
-          backgroundColor: '#25292e',
-        },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-            <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
-          ),
-        }}
-      />
-      <Tabs.Screen
+      {/*
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
+              <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+            ),
+          }}
+        />
+      */}
+      <Stack.Screen
         name="about"
         options={{
-          title: 'About',
-          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24} />
-          ),
+          title: ''
         }}
       />
-    </Tabs>
+    </Stack>
   );
 }
 
