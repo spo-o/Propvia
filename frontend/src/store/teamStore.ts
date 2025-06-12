@@ -36,7 +36,7 @@ export const useTeamStore = create<TeamState>()(
           const token = nanoid();
           
           // Store invitation in Supabase
-          const { error } = await supabase
+          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
             .from('invitations')
             .insert({
               email,
@@ -48,7 +48,7 @@ export const useTeamStore = create<TeamState>()(
           if (error) throw error;
 
           // Send invitation email (in a real app, this would be handled by a server)
-          const inviteUrl = `${window.location.origin}/signup?token=${token}`;
+          const inviteUrl = `${window.location.origin}/signup?token=${token}`; // Backend Logic Found: NEEDS TO BE REFACTORED
           console.log('Invitation URL:', inviteUrl);
 
           // Update local state
@@ -69,7 +69,7 @@ export const useTeamStore = create<TeamState>()(
       acceptInvitation: async (email) => {
         try {
           // Update member status in Supabase
-          const { error } = await supabase
+          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
             .from('team_members')
             .update({ status: 'active', accepted_at: new Date() })
             .eq('email', email);
@@ -92,7 +92,7 @@ export const useTeamStore = create<TeamState>()(
       removeTeamMember: async (id) => {
         try {
           // Remove member from Supabase
-          const { error } = await supabase
+          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
             .from('team_members')
             .delete()
             .eq('id', id);
@@ -111,7 +111,7 @@ export const useTeamStore = create<TeamState>()(
       updateTeamMemberRole: async (id, role) => {
         try {
           // Update role in Supabase
-          const { error } = await supabase
+          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
             .from('team_members')
             .update({ role })
             .eq('id', id);

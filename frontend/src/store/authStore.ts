@@ -17,7 +17,7 @@ interface AuthState {
   logout: () => void;
 }
 
-const ADMIN_EMAIL = 'admin@propvia.com';
+const ADMIN_EMAIL = 'admin@propvia.com'; // Backend Logic Found: NEEDS TO BE REFACTORED
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -25,12 +25,12 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       isAdmin: false,
-      login: (user) => set({ 
+      login: (user) => set({ // Backend Logic Found: NEEDS TO BE REFACTORED
         user, 
         isAuthenticated: true, 
         isAdmin: user.email === ADMIN_EMAIL 
       }),
-      logout: () => set({ user: null, isAuthenticated: false, isAdmin: false }),
+      logout: () => set({ user: null, isAuthenticated: false, isAdmin: false }), // Backend Logic Found: NEEDS TO BE REFACTORED
     }),
     {
       name: 'auth-storage',
