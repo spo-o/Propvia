@@ -17,8 +17,8 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen 
-        name="pages"
-        options={{ title: '', headerShown: true }} />
+        name="about"
+        options={{ title: 'About', headerShown: true }} />
       <Stack.Screen 
         name="index"
         options={{ title: 'Propvia', headerShown: true }} />
