@@ -11,9 +11,10 @@ export default function Index() {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: '#fff',
       }}
     >
-      <Text>This is the home screen</Text>
+      <Text style={{ color: '#000' }}>This is the home screen</Text>
       <Link href="/about" style={{ marginTop: 16, color: "#1976d2" }}>
   Go to About Page
 </Link>
