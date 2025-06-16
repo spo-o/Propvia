@@ -18,6 +18,9 @@ export default function Index() {
       <Link href="/about" style={{ marginTop: 16, color: "#1976d2" }}>
   Go to About Page
 </Link>
+<Link href="/property-explorer" style={{ marginTop: 16, color: "#1976d2" }}>
+  Go to Property Explorer
+</Link>
     </View>
   );
 }

@@ -1,10 +1,10 @@
 import { Text, View, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
 
-export default function AboutScreen() {
+export default function PropertyExplorerScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>About Page</Text>
-      <Text style={styles.text}>This is a test message.</Text>
+      <Text style={styles.text}>Property Explorer</Text>
     </View>
   );
 }
@@ -16,15 +16,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
+  text: {
     color: '#fff',
     fontSize: 24,
     marginBottom: 20,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
-  text: {
-    color: '#fff',
+  link: {
+    color: '#1976d2',
+    fontSize: 16,
   },
 });
-
-

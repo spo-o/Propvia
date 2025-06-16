@@ -22,6 +22,9 @@ export default function RootLayout() {
       <Stack.Screen 
         name="index"
         options={{ title: 'Propvia', headerShown: true }} />
+        <Stack.Screen 
+        name="property-explorer"
+        options={{ title: 'Property Explorer', headerShown: true }} />
     </Stack>
   );
 }
