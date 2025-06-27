@@ -1,0 +1,78 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+import signupRouter from './routes/auth/signup';
+import loginRouter from './routes/auth/login';
+import getAdminRoleRouter from './routes/auth/getAdminRole';
+import subscribersRouter from './routes/subscribers/index';
+import usersRouter from './routes/users/index';
+import newslettersRouter from './routes/newsletters/index';
+import blogsRouter from './routes/blogs/index';
+import generateBlogRouter from './routes/blogs/generate';
+import publishRoute from './routes/blogs/publish';
+import deleteRoute from './routes/blogs/delete';
+import updateRoute from './routes/blogs/update';
+import aiAskRouter from './routes/ai/ask';
+import inviteRoute from './routes/team/invite';
+import acceptRoute from './routes/team/accept';
+import removeRoute from './routes/team/remove';
+import updateRoleRoute from './routes/team/updateRole';
+import savePropertyRouter from './routes/property/saveProperty';
+import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
+
+import loopnetRoutes from './routes/property/loopnet';
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Auth
+app.use('/api/auth/signup', signupRouter);
+app.use('/api/auth/login', loginRouter);
+
+// AdminPortal APIs
+app.use('/api/user/role', getAdminRoleRouter);
+app.use('/api/subscribers', subscribersRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/newsletters', newslettersRouter);
+app.use('/api/blogs', blogsRouter);
+app.use('/api/blogs/generate', generateBlogRouter);
+app.use('/api/blogs', publishRoute);
+app.use('/api/blogs', deleteRoute);
+app.use('/api/blogs', updateRoute);
+
+//CustomProperty analysis API
+app.use('/api/property/saveProperty', savePropertyRouter);
+
+//Header
+app.use('/api/ai', aiAskRouter);
+
+// backend/src/app.ts
+import contactRoute from './routes/contact/contact';
+app.use('/api/contact', contactRoute);
+
+
+// Team routes
+app.use('/api/team/invite', inviteRoute);
+app.use('/api/team/accept', acceptRoute);
+app.use('/api/team/remove', removeRoute);
+app.use('/api/team/updateRole', updateRoleRoute);
+
+//stripe
+app.use('/api/checkout', stripeCheckoutRoute);
+
+//live geo data
+app.use('/api/property', loopnetRoutes);
+
+
+const PORT = process.env.PORT || 5050;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+

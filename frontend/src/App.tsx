@@ -5,7 +5,6 @@ import { Notification, SavedScenario } from './types';
 import ProtectedRoute from './components/ProtectedRoute';
 import Toast from './components/Toast';
 import Footer from './components/Footer';
-import { createClient } from '@supabase/supabase-js';
 
 import Home from './pages/Home';
 import PropertyExplorer from './pages/PropertyExplorer';
@@ -31,15 +30,15 @@ import Guides from './pages/Guides';
 import GuidePage from './pages/GuidePage';
 import Contact from './pages/Contact';
 import Careers from './pages/Careers';
-import Success from './pages/Success';
+import SuccessPage from './pages/Success';
+
+
+
 import { useAuthStore } from './store/authStore';
+import ScrollToTop from './components/ScrollToTop';
+import RequestsList from './pages/RequestsList';
 
 const queryClient = new QueryClient();
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 function AppContent() {
   const { isAuthenticated } = useAuthStore();
@@ -119,13 +118,13 @@ function AppContent() {
         onOpenSavedScenarios={handleOpenSavedScenarios}
         onDownloadFullReport={() => {}}
       />
-
+      <ScrollToTop/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route 
           path="/platform" 
           element={
-            <div className="flex-1 flex flex-col">
+            <div className="flex flex-col">
               {renderWithLayout(<PropertyExplorer onSaveScenario={handleSaveScenario} />)}
             </div>
           }
@@ -145,7 +144,7 @@ function AppContent() {
         <Route path="/guides/:id" element={renderWithLayout(<GuidePage />, false)} />
         <Route path="/contact" element={renderWithLayout(<Contact />, false)} />
         <Route path="/careers" element={renderWithLayout(<Careers />, false)} />
-        <Route path="/success" element={renderWithLayout(<Success />, false)} />
+        <Route path="/success" element={<SuccessPage />} />
         
         <Route path="/reports" element={
           <ProtectedRoute>
@@ -160,6 +159,11 @@ function AppContent() {
         <Route path="/user-dashboard" element={
           <ProtectedRoute>
             {renderWithLayout(<UserDashboard savedScenarios={savedScenarios} />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/requests" element={
+          <ProtectedRoute>
+            {renderWithLayout(<RequestsList savedScenarios={savedScenarios} />)}
           </ProtectedRoute>
         } />
         <Route path="/team" element={

@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js'; // Backend Logic Found 
 import { useNavigate } from 'react-router-dom';
 import { Users, Mail, FileText, BarChart, Settings, Download, Edit, Trash2, Plus } from 'lucide-react';
 import { useToastStore } from '../store/toastStore';
+import { useAuthStore } from '../store/authStore';
+import { getAdminRole } from '../api/auth';
+import { fetchSubscribers } from '../api/subscribers';
+import { fetchUsers } from '../api/users';
+import { fetchNewsletters } from '../api/newsletters';
+import { fetchBlogs, generateBlog, createBlog, publishBlog, deleteBlog, updateBlog } from '../api/blogs';
 import * as Dialog from '@radix-ui/react-dialog';
-
-// Backend Logic Found
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 export default function AdminPortal() {
   const [activeTab, setActiveTab] = useState('subscribers');
@@ -22,68 +21,51 @@ export default function AdminPortal() {
   const [blogTitle, setBlogTitle] = useState('');
   const [blogContent, setBlogContent] = useState('');
   const [generatingBlog, setGeneratingBlog] = useState(false);
-  const showToast = useToastStore(state => state.showToast);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAdminAccess();
-    fetchData();
-  }, []);
+const { token } = useAuthStore();
+const showToast = useToastStore(state => state.showToast);
+const navigate = useNavigate();
+
+useEffect(() => {
+  checkAdminAccess();
+  fetchData();
+
+  console.log("Token from Zustand store:", token);
+}, []);
+
 
   const checkAdminAccess = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    try {
+      const res = await getAdminRole(token);
+      if (res.role !== 'admin') {
+        navigate('/');
+        showToast('Unauthorized access', 'error');
+      }
+    } catch {
       navigate('/login');
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
-
-    if (!profile || profile.role !== 'admin') {
-      navigate('/');
       showToast('Unauthorized access', 'error');
     }
   };
 
   const fetchData = async () => {
     try {
-      // Fetch newsletter subscribers
-      const { data: subscriberData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('newsletter_subscribed', true);
-      setSubscribers(subscriberData || []);
-
-      // Fetch all users
-      const { data: userData } = await supabase
-        .from('profiles')
-        .select('*');
-      setUsers(userData || []);
-
-      // Fetch newsletters
-      const { data: newsletterData } = await supabase
-        .from('newsletters')
-        .select('*')
-        .order('created_at', { ascending: false });
-      setNewsletters(newsletterData || []);
-
-      // Fetch blogs
-      const { data: blogData } = await supabase
-        .from('blogs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      setBlogs(blogData || []);
-    } catch (error) {
+      const [subs, usersData, newslettersData, blogsData] = await Promise.all([
+        fetchSubscribers(token),
+        fetchUsers(token),
+        fetchNewsletters(token),
+        fetchBlogs(token)
+      ]);
+      setSubscribers(subs);
+      setUsers(usersData);
+      setNewsletters(newslettersData);
+      setBlogs(blogsData);
+    } catch {
       showToast('Error fetching data', 'error');
     } finally {
       setLoading(false);
     }
   };
-  
+
   const generateBlogContent = async () => {
     if (!blogTitle) {
       showToast('Please enter a blog title', 'error');
@@ -92,12 +74,9 @@ export default function AdminPortal() {
 
     setGeneratingBlog(true);
     try {
-      const { data } = await supabase.functions.invoke('generate-blog', {
-        body: { title: blogTitle }
-      });
-
-      setBlogContent(data.content);
-    } catch (error) {
+      const result = await generateBlog(token, blogTitle);
+      setBlogContent(result.content);
+    } catch {
       showToast('Error generating blog content', 'error');
     } finally {
       setGeneratingBlog(false);
@@ -111,27 +90,53 @@ export default function AdminPortal() {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('blogs')
-        .insert({
-          title: blogTitle,
-          content: blogContent,
-          status: 'draft'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setBlogs([data, ...blogs]);
+      const newBlog = await createBlog(token, {
+        title: blogTitle,
+        content: blogContent
+      });
+      setBlogs([newBlog, ...blogs]);
       setShowBlogDialog(false);
       setBlogTitle('');
       setBlogContent('');
       showToast('Blog post saved successfully', 'success');
-    } catch (error) {
+    } catch {
       showToast('Error saving blog post', 'error');
     }
   };
+
+  const handlePublish = async (id: string) => {
+  try {
+    const updated = await publishBlog(token, id);
+    setBlogs((prev) =>
+      prev.map((blog) => (blog.id === id ? updated : blog))
+    );
+    showToast('Blog published successfully', 'success');
+  } catch {
+    showToast('Error publishing blog', 'error');
+  }
+};
+
+const handleDelete = async (id: string) => {
+  try {
+    await deleteBlog(token, id);
+    setBlogs((prev) => prev.filter((blog) => blog.id !== id));
+    showToast('Blog deleted', 'success');
+  } catch {
+    showToast('Error deleting blog', 'error');
+  }
+};
+
+const handleUpdate = async (id: string, updatedData: { title?: string; content?: string }) => {
+  try {
+    const updated = await updateBlog(token, id, updatedData);
+    setBlogs((prev) =>
+      prev.map((blog) => (blog.id === id ? updated : blog))
+    );
+    showToast('Blog updated', 'success');
+  } catch {
+    showToast('Error updating blog', 'error');
+  }
+};
 
   const exportSubscribers = () => {
     const csv = subscribers.map(s => `${s.email},${s.created_at}`).join('\n');
@@ -299,25 +304,45 @@ export default function AdminPortal() {
                 </div>
                 <div className="space-y-4">
                   {blogs.map((blog) => (
-                    <div key={blog.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-gray-900">{blog.title}</h3>
-                          <p className="text-sm text-gray-500">
-                            {new Date(blog.created_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <button className="p-2 text-gray-400 hover:text-gray-600">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 text-red-400 hover:text-red-600">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                  <div key={blog.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{blog.title}</h3>
+                        <p className="text-sm text-gray-500">
+                          {new Date(blog.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          className="p-2 text-green-500 hover:text-green-700"
+                          onClick={() => handlePublish(blog.id)}
+                          title="Publish"
+                        >
+                          ⬆️
+                        </button>
+                        <button
+                          className="p-2 text-gray-400 hover:text-gray-600"
+                          onClick={() => {
+                            setBlogTitle(blog.title);
+                            setBlogContent(blog.content);
+                            setShowBlogDialog(true);
+                            setEditingBlogId(blog.id); // Optional: track which blog is being edited
+                          }}
+                          title="Edit"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="p-2 text-red-400 hover:text-red-600"
+                          onClick={() => handleDelete(blog.id)}
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
                 </div>
               </div>
             )}
@@ -413,3 +438,4 @@ export default function AdminPortal() {
     </div>
   );
 }
+
