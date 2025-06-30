@@ -80,9 +80,9 @@ export default function Login() {
       } else {
         // Login
         const resp = await backendLogin(email, password);
-        const u = resp.user;
+        const u = resp.user as any;
         const token = resp.session.access_token;
-        const userData: User = {
+        const userData: any = {
           id: u.id,
           email: u.email,
           full_name: u.full_name,

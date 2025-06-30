@@ -136,6 +136,24 @@ export const properties: Property[] = [
           year5: 80
         }
       }
+    },
+    detailedMetrics: {
+      buildingCondition: '',
+      roofCondition: '',
+      hvacAge: 0,
+      electricalSystem: '',
+      plumbingCondition: '',
+      foundationStatus: '',
+      accessibilityScore: 0,
+      energyEfficiency: '',
+      internetSpeed: '',
+      noiseLevel: '',
+      naturalLight: '',
+      ceilingHeight: 0,
+      loadingDock: false,
+      sprinklerSystem: false,
+      securitySystem: false,
+      lastRenovated: 0
     }
   },
   {
@@ -273,6 +291,24 @@ export const properties: Property[] = [
           year5: 80
         }
       }
+    },
+    detailedMetrics: {
+      buildingCondition: '',
+      roofCondition: '',
+      hvacAge: 0,
+      electricalSystem: '',
+      plumbingCondition: '',
+      foundationStatus: '',
+      accessibilityScore: 0,
+      energyEfficiency: '',
+      internetSpeed: '',
+      noiseLevel: '',
+      naturalLight: '',
+      ceilingHeight: 0,
+      loadingDock: false,
+      sprinklerSystem: false,
+      securitySystem: false,
+      lastRenovated: 0
     }
   },
   {
@@ -410,6 +446,24 @@ export const properties: Property[] = [
           year5: 70
         }
       }
+    },
+    detailedMetrics: {
+      buildingCondition: '',
+      roofCondition: '',
+      hvacAge: 0,
+      electricalSystem: '',
+      plumbingCondition: '',
+      foundationStatus: '',
+      accessibilityScore: 0,
+      energyEfficiency: '',
+      internetSpeed: '',
+      noiseLevel: '',
+      naturalLight: '',
+      ceilingHeight: 0,
+      loadingDock: false,
+      sprinklerSystem: false,
+      securitySystem: false,
+      lastRenovated: 0
     }
   },
   {
@@ -547,6 +601,24 @@ export const properties: Property[] = [
           year5: 60
         }
       }
+    },
+    detailedMetrics: {
+      buildingCondition: '',
+      roofCondition: '',
+      hvacAge: 0,
+      electricalSystem: '',
+      plumbingCondition: '',
+      foundationStatus: '',
+      accessibilityScore: 0,
+      energyEfficiency: '',
+      internetSpeed: '',
+      noiseLevel: '',
+      naturalLight: '',
+      ceilingHeight: 0,
+      loadingDock: false,
+      sprinklerSystem: false,
+      securitySystem: false,
+      lastRenovated: 0
     }
   }
 ];

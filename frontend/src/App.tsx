@@ -10,7 +10,7 @@ import Home from './pages/Home';
 import PropertyExplorer from './pages/PropertyExplorer';
 import PropertyDetail from './pages/PropertyDetail';
 import ReportsCenter from './pages/ReportsCenter';
-import MarketIntelligence from './pages/MarketIntelligence';
+// import MarketIntelligence from './pages/MarketIntelligence';
 import UserDashboard from './pages/UserDashboard';
 import TeamCollaboration from './pages/TeamCollaboration';
 import Settings from './pages/Settings';
@@ -18,7 +18,7 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import SavedScenariosDialog from './components/SavedScenariosDialog';
-import AdminPortal from './pages/AdminPortal';
+// import AdminPortal from './pages/AdminPortal';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -151,11 +151,11 @@ function AppContent() {
             {renderWithLayout(<ReportsCenter savedScenarios={savedScenarios} />)}
           </ProtectedRoute>
         } />
-        <Route path="/market" element={
+        {/* <Route path="/market" element={
           <ProtectedRoute>
             {renderWithLayout(<MarketIntelligence />)}
           </ProtectedRoute>
-        } />
+        } /> */}
         <Route path="/user-dashboard" element={
           <ProtectedRoute>
             {renderWithLayout(<UserDashboard savedScenarios={savedScenarios} />)}
@@ -176,11 +176,11 @@ function AppContent() {
             {renderWithLayout(<Settings />)}
           </ProtectedRoute>
         } />
-        <Route path="/admin" element={
+        {/* <Route path="/admin" element={
           <ProtectedRoute requireAdmin>
             {renderWithLayout(<AdminPortal />)}
           </ProtectedRoute>
-        } />
+        } /> */}
       </Routes>
 
       <SavedScenariosDialog
