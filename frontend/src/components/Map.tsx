@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import L from 'leaflet';
 
 interface MapProps {
-  properties: Property[];
+  properties: Property[]; // Backend Logic Found: Property data fetched from backend
   selectedProperty: Property | null;
   onPropertySelect: (property: Property) => void;
 }
@@ -33,7 +33,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
   };
 
   // Calculate bounds for all properties
-  const validProperties = properties.filter(p => typeof p.latitude === 'number' && typeof p.longitude === 'number');
+  const validProperties = properties.filter(p => typeof p.latitude === 'number' && typeof p.longitude === 'number');  // Backend Logic Found: Filtering properties based on backend data
   const bounds = validProperties.length > 0 
     ? L.latLngBounds(validProperties.map(p => [p.latitude, p.longitude]))
     : L.latLngBounds([[42.331429, -83.045753], [42.331429, -83.045753]]); // Detroit center as fallback
@@ -61,6 +61,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        // Backend Logic Found: Rendering map markers using backend property data
         {properties.map((property) => {
           if (typeof property.latitude !== 'number' || typeof property.longitude !== 'number') {
             return null;

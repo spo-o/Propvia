@@ -10,7 +10,7 @@ import { useToastStore } from '../store/toastStore';
 import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 
-interface HeaderProps {
+interface HeaderProps { // Backend Logic Found: Notifications data coming from backend
   notifications: Notification[];
   unreadCount: number;
   onMarkNotificationAsRead: (id: string) => void;
@@ -25,7 +25,7 @@ export default function Header({
   unreadCount = 0,
   onDownloadFullReport
 }: HeaderProps) {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore(); // Backend Logic Found: Authentication state management (login/logout, user info)
   const navigate = useNavigate();
   const showToast = useToastStore(state => state.showToast);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -34,7 +34,7 @@ export default function Header({
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState('');
 
-  const handleLogout = () => {
+  const handleLogout = () => {  // Backend Logic Found: Logout process (token/session clearing on backend)
     logout();
     showToast('Successfully logged out', 'success');
     navigate('/platform');
@@ -46,7 +46,7 @@ export default function Header({
   };
 
   const handleNotificationClick = (id: string) => {
-    onMarkNotificationAsRead(id);
+    onMarkNotificationAsRead(id); // Backend Logic Found: Update notification read status in backend
     showToast('Notification marked as read', 'success');
   };
 
@@ -64,7 +64,7 @@ export default function Header({
     
     setIsLoading(true);
     try {
-      // Simulate API call
+      // Backend Logic Found: AI query to backend service (currently simulated)
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setResponse(`Based on your query "${askQuery}", here are our recommendations:
@@ -203,7 +203,7 @@ These locations align with current market trends and show strong potential for g
                       <Avatar.Root className="inline-flex h-10 w-10 select-none items-center justify-center overflow-hidden rounded-full bg-brand-600 hover:bg-brand-700 transition-colors">
                         <Avatar.Image
                           className="h-full w-full object-cover"
-                          src={user?.avatar}
+                          src={user?.avatar}  // Backend Logic Found: User avatar URL from backend profile
                           alt={user?.name}
                         />
                         <Avatar.Fallback 
