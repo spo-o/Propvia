@@ -478,72 +478,78 @@ export default function PropertyAnalysisDialog({
   return (
     <Dialog.Root open={!!property} onOpenChange={() => onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] md:w-[90vw] max-w-[1000px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-4 md:p-6 shadow-xl overflow-auto">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <Dialog.Title className="text-xl md:text-2xl font-bold text-gray-900">
-                Property Analysis
-              </Dialog.Title>
-              <Dialog.Description className="text-gray-600">
-                {property?.address}
-              </Dialog.Description>
+        <Dialog.Overlay className="dialog-overlay" />
+        <Dialog.Content className="dialog-content">
+          <div className="relative">
+            {/* Enhanced Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200/50 p-6 rounded-t-2xl">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-brand to-brand-600 rounded-xl flex items-center justify-center">
+                    <Building2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <Dialog.Title className="text-2xl font-bold bg-gradient-to-r from-brand to-brand-600 bg-clip-text text-transparent">
+                      Property Analysis
+                    </Dialog.Title>
+                    <Dialog.Description className="text-gray-600 mt-1 flex items-center space-x-2">
+                      <span>{property?.address}</span>
+                      <div className="w-2 h-2 bg-brand rounded-full"></div>
+                      <span className="text-sm px-2 py-1 bg-brand/10 text-brand rounded-full font-medium">
+                        Commercial Property
+                      </span>
+                    </Dialog.Description>
+                  </div>
+                </div>
+                <Dialog.Close className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+                  <X className="w-6 h-6" />
+                </Dialog.Close>
+              </div>
             </div>
-            <Dialog.Close className="p-2 text-gray-400 hover:text-gray-500">
-              <X className="w-5 h-5" />
-            </Dialog.Close>
-          </div>
 
-          <div className="flex flex-wrap gap-2 mb-6">
-            <button
-              onClick={() => setActiveTab('recommendations')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                activeTab === 'recommendations'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Recommendations
-            </button>
-            <button
-              onClick={() => setActiveTab('financials')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                activeTab === 'financials'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Financial Forecast
-            </button>
-            <button
-              onClick={() => setActiveTab('details')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                activeTab === 'details'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Property Details
-            </button>
-          </div>
+            <div className="p-6">
+              {/* Enhanced Tab Navigation */}
+              <div className="flex flex-wrap gap-2 mb-8">
+                {[
+                  { id: 'recommendations', label: 'AI Recommendations', icon: '🎯' },
+                  { id: 'financials', label: 'Financial Forecast', icon: '📊' },
+                  { id: 'details', label: 'Property Details', icon: '🏢' }
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as Tab)}
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-brand to-brand-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                    }`}
+                  >
+                    <span>{tab.icon}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
+              </div>
 
-          {renderTab()}
+              {renderTab()}
 
-          <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4">
-            <button
-              onClick={handleGenerateReport}
-              className="flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <FileText className="w-5 h-5 mr-2" />
-              Generate Report
-            </button>
-            <button
-              onClick={handleSave}
-              className="flex items-center justify-center px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-600 transition-colors"
-            >
-              <Save className="w-5 h-5 mr-2" />
-              Save Analysis
-            </button>
+              {/* Enhanced Action Buttons */}
+              <div className="flex flex-col sm:flex-row justify-end mt-8 gap-4 pt-6 border-t border-gray-200/50">
+                <button
+                  onClick={handleGenerateReport}
+                  className="flex items-center justify-center px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Generate Report
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex items-center justify-center px-6 py-3 btn-brand"
+                >
+                  <Save className="w-5 h-5 mr-2" />
+                  Save Analysis
+                </button>
+              </div>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

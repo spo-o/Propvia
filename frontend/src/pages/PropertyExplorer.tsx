@@ -38,6 +38,14 @@ export default function PropertyExplorer({ onSaveScenario }: PropertyExplorerPro
     setSelectedProperty(property);
   }, [isAuthenticated, navigate, showToast]);
 
+  const requestAnalysisClick = () => {
+    if(!isAuthenticated){
+      navigate("/login", { replace: true });
+      return
+    }
+    setShowCustomForm(true);
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
       <div className="p-4 md:p-6 space-y-4">
@@ -50,7 +58,7 @@ export default function PropertyExplorer({ onSaveScenario }: PropertyExplorerPro
           </div>
           <div className="flex items-center space-x-4 w-full sm:w-auto">
             <button
-              onClick={() => setShowCustomForm(true)}
+              onClick={() => requestAnalysisClick()}
               className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2 bg-brand text-white rounded-lg hover:bg-brand-600"
             >
               <Plus className="w-5 h-5" />

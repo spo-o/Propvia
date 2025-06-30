@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { Building2, Lock, Mail, Check, X } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
 import { useToastStore } from '../store/toastStore';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import { signup as backendSignup, login as backendLogin } from '../api/auth';
+import { Building2, Lock, Mail, Check, X } from 'lucide-react';
 
 interface UserProfile {
   firstName: string;
@@ -27,7 +22,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [doPasswordsMatch, setDoPasswordsMatch] = useState(false);
-  const [showProfileForm, setShowProfileForm] = useState(false);
+
   const [profile, setProfile] = useState<UserProfile>({
     firstName: '',
     lastName: '',
@@ -35,168 +30,79 @@ export default function Login() {
     company: '',
     role: ''
   });
-  
+
   const navigate = useNavigate();
   const location = useLocation();
-  const login = useAuthStore((state) => state.login);
-  const showToast = useToastStore(state => state.showToast);
+  // **Grab the `login` action from your Zustand store**
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const showToast = useToastStore((s) => s.showToast);
 
-  const from = location.state?.from?.pathname || '/property-explorer';
+  const from = (location.state as any)?.from?.pathname || '/property-explorer';
 
-  const toggleSignUp = () => {
-    setIsSignUp(!isSignUp);
+  useEffect(() => {
+    setIsPasswordValid(password.length >= 8);
+    setDoPasswordsMatch(password === confirmPassword);
+  }, [password, confirmPassword]);
+
+  const toggleMode = () => {
+    setIsSignUp((v) => !v);
     setError('');
     setPassword('');
     setConfirmPassword('');
   };
 
-  useEffect(() => {
-    setIsPasswordValid(password.length >= 6);
-    setDoPasswordsMatch(password === confirmPassword);
-  }, [password, confirmPassword]);
-
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setError('');
+
     if (isSignUp) {
       if (!isPasswordValid) {
-        setError('Password must be at least 6 characters long.');
+        setError('Password must be at least 8 characters long.');
         return;
       }
       if (!doPasswordsMatch) {
         setError('Passwords do not match.');
         return;
       }
+      if (!profile.firstName || !profile.lastName) {
+        setError('First & last name are required.');
+        return;
+      }
     }
 
     setLoading(true);
-    setError('');
-
     try {
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: `${profile.firstName} ${profile.lastName}`,
-              phone: profile.phone,
-              company: profile.company,
-              role: profile.role
-            }
-          }
-        });
-        if (error) throw error;
-        
-        showToast('Account created successfully!', 'success');
-        navigate(from);
+        // Signup (no auto-login)
+        await backendSignup(email, password, profile);
+        showToast('Account created! Please login to continue.', 'success');
+        setIsSignUp(false);
       } else {
-        const { data: { user }, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
+        // Login
+        const resp = await backendLogin(email, password);
+        const u = resp.user;
+        const token = resp.session.access_token;
+        const userData: User = {
+          id: u.id,
+          email: u.email,
+          full_name: u.full_name,
+          company: u.company,
+          phone: u.phone,
+          role: u.role,
+        };
 
-        login({
-          id: user.id,
-          name: `${profile.firstName} ${profile.lastName}`,
-          email: email,
-          isAdmin: email === 'admin@propvia.com'
-        });
-        
+        setAuth(userData, token);
+        showToast('Logged in successfully!', 'success');
         navigate(from);
       }
-    } catch (error) {
-      setError(error.message);
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      setError(err.message || 'Authentication failed');
+      showToast(err.message || 'Error', 'error');
     } finally {
       setLoading(false);
     }
   };
-
-  if (showProfileForm) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <div className="max-w-md w-full space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Complete Your Profile</h2>
-            <p className="mt-2 text-gray-600">Tell us a bit about yourself</p>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">First Name</label>
-                <input
-                  type="text"
-                  required
-                  value={profile.firstName}
-                  onChange={(e) => setProfile({...profile, firstName: e.target.value})}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                <input
-                  type="text"
-                  required
-                  value={profile.lastName}
-                  onChange={(e) => setProfile({...profile, lastName: e.target.value})}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-              <input
-                type="tel"
-                required
-                value={profile.phone}
-                onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Company</label>
-              <input
-                type="text"
-                required
-                value={profile.company}
-                onChange={(e) => setProfile({...profile, company: e.target.value})}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Role</label>
-              <select
-                required
-                value={profile.role}
-                onChange={(e) => setProfile({...profile, role: e.target.value})}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
-                <option value="">Select your role</option>
-                <option value="investor">Investor</option>
-                <option value="small_business">Small Business Owner</option>
-                <option value="government">Government Official</option>
-                <option value="real_estate">Real Estate Agent</option>
-                <option value="personal">Personal Use</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Complete Sign Up
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -209,9 +115,11 @@ export default function Login() {
             {isSignUp ? 'Create your account' : 'Sign in to your account'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+            {isSignUp
+              ? 'Already have an account?'
+              : "Don't have an account?"}{' '}
             <button
-              onClick={toggleSignUp}
+              onClick={toggleMode}
               className="font-medium text-blue-600 hover:text-blue-500"
             >
               {isSignUp ? 'Sign in' : 'Sign up'}
@@ -220,13 +128,86 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
             {error}
           </div>
         )}
 
         <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="rounded-md shadow-sm -space-y-px">
+            {isSignUp && (
+              <>
+                {/* PROFILE FIELDS */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="sr-only">First Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={profile.firstName}
+                      onChange={(e) =>
+                        setProfile({ ...profile, firstName: e.target.value })
+                      }
+                      placeholder="First Name"
+                      className="appearance-none rounded-md block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only">Last Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={profile.lastName}
+                      onChange={(e) =>
+                        setProfile({ ...profile, lastName: e.target.value })
+                      }
+                      placeholder="Last Name"
+                      className="appearance-none rounded-md block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4 mb-4">
+                  <input
+                    type="tel"
+                    required
+                    value={profile.phone}
+                    onChange={(e) =>
+                      setProfile({ ...profile, phone: e.target.value })
+                    }
+                    placeholder="Phone Number"
+                    className="appearance-none rounded-md block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                  <input
+                    type="text"
+                    required
+                    value={profile.company}
+                    onChange={(e) =>
+                      setProfile({ ...profile, company: e.target.value })
+                    }
+                    placeholder="Company"
+                    className="appearance-none rounded-md block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  />
+                  <select
+                    required
+                    value={profile.role}
+                    onChange={(e) =>
+                      setProfile({ ...profile, role: e.target.value })
+                    }
+                    className="appearance-none rounded-md block w-full px-3 py-2 border border-gray-300 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  >
+                    <option value="">Select your role</option>
+                    <option value="investor">Investor</option>
+                    <option value="small_business">Small Business Owner</option>
+                    <option value="government">Government Official</option>
+                    <option value="real_estate">Real Estate Agent</option>
+                    <option value="personal">Personal Use</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {/* EMAIL */}
             <div>
               <label htmlFor="email-address" className="sr-only">
                 Email address
@@ -241,16 +222,18 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Email address"
                 />
               </div>
             </div>
+
+            {/* PASSWORD */}
             <div>
               <label htmlFor="password" className="sr-only">
-                Password
+                {isSignUp ? 'New password' : 'Password'}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -260,14 +243,20 @@ export default function Login() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete={isSignUp ? "new-password" : "current-password"}
+                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
                   required
-                  className={`appearance-none rounded-none relative block w-full px-3 py-2 pl-10 pr-10 border ${
-                    isSignUp && password ? (isPasswordValid ? 'border-green-300' : 'border-red-300') : 'border-gray-300'
-                  } placeholder-gray-500 text-gray-900 ${!isSignUp ? 'rounded-b-md' : ''} focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={`appearance-none rounded-none relative block w-full px-3 py-2 pl-10 pr-10 border ${
+                    isSignUp && password
+                      ? isPasswordValid
+                        ? 'border-green-300'
+                        : 'border-red-300'
+                      : 'border-gray-300'
+                  } placeholder-gray-500 text-gray-900 ${
+                    !isSignUp ? 'rounded-b-md' : ''
+                  } focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                  placeholder="Password"
                 />
                 {isSignUp && password && (
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -280,10 +269,12 @@ export default function Login() {
                 )}
               </div>
             </div>
+
+            {/* CONFIRM PASSWORD */}
             {isSignUp && (
               <div>
                 <label htmlFor="confirm-password" className="sr-only">
-                  Confirm Password
+                  Confirm password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -295,12 +286,16 @@ export default function Login() {
                     type="password"
                     autoComplete="new-password"
                     required
-                    className={`appearance-none rounded-none relative block w-full px-3 py-2 pl-10 pr-10 border ${
-                      confirmPassword ? (doPasswordsMatch ? 'border-green-300' : 'border-red-300') : 'border-gray-300'
-                    } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                    placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`appearance-none rounded-none relative block w-full px-3 py-2 pl-10 pr-10 border ${
+                      confirmPassword
+                        ? doPasswordsMatch
+                          ? 'border-green-300'
+                          : 'border-red-300'
+                        : 'border-gray-300'
+                    } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+                    placeholder="Confirm Password"
                   />
                   {confirmPassword && (
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -316,11 +311,42 @@ export default function Login() {
             )}
           </div>
 
-          {isSignUp && (
-            <div className="text-sm text-gray-600">
-              Password must be at least 6 characters long
-            </div>
-          )}
+          <div>
+            <button
+              type="submit"
+              disabled={loading || (isSignUp && (!isPasswordValid || !doPasswordsMatch))}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </span>
+              ) : isSignUp ? (
+                'Sign up'
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </div>
 
           {!isSignUp && (
             <div className="flex items-center justify-between">
@@ -331,37 +357,24 @@ export default function Login() {
                   type="checkbox"
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 block text-sm text-gray-900"
+                >
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <Link to="/reset-password" className="font-medium text-blue-600 hover:text-blue-500">
+                <Link
+                  to="/reset-password"
+                  className="font-medium text-blue-600 hover:text-blue-500"
+                >
                   Forgot your password?
                 </Link>
               </div>
             </div>
           )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading || (isSignUp && (!isPasswordValid || !doPasswordsMatch))}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </span>
-              ) : (
-                isSignUp ? 'Sign up' : 'Sign in'
-              )}
-            </button>
-          </div>
         </form>
       </div>
     </div>

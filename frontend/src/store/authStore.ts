@@ -1,39 +1,57 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  isAdmin?: boolean;
-}
+const ADMIN_EMAIL = 'admin@propvia.com';
 
+export interface User {
+  id: string;
+  email: string;
+  full_name?: string;
+  company?: string;
+  phone?: string;
+  role?: string;
+  // any other fields from your backend payload
+}
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: (user: User) => void;
+  setAuth: (user: User, token: string) => void;
   logout: () => void;
 }
 
-const ADMIN_EMAIL = 'admin@propvia.com'; // Backend Logic Found: NEEDS TO BE REFACTORED
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
       isAdmin: false,
-      login: (user) => set({ // Backend Logic Found: NEEDS TO BE REFACTORED
-        user, 
-        isAuthenticated: true, 
-        isAdmin: user.email === ADMIN_EMAIL 
-      }),
-      logout: () => set({ user: null, isAuthenticated: false, isAdmin: false }), // Backend Logic Found: NEEDS TO BE REFACTORED
+
+      setAuth: (user, token) => {
+        set({
+          user,
+          token,
+          isAuthenticated: true,
+          isAdmin: user.email === ADMIN_EMAIL,
+        });
+      },
+
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          isAdmin: false,
+        });
+      },
     }),
     {
       name: 'auth-storage',
+      // only persist user & token; isAuthenticated/isAdmin derive from them
+      partialize: (state) => ({ user: state.user, token: state.token }),
     }
   )
 );

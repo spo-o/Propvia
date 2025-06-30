@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import {
+  inviteTeamMember as apiInviteTeamMember,
+  acceptInvitation as apiAcceptInvitation,
+  removeTeamMember as apiRemoveTeamMember,
+  updateTeamMemberRole as apiUpdateTeamMemberRole,
+} from '../api/team';
 
 interface TeamMember {
   id: string;
@@ -32,34 +32,20 @@ export const useTeamStore = create<TeamState>()(
       members: [],
       inviteTeamMember: async (email, role) => {
         try {
-          // Generate a unique token for the invitation
-          const token = nanoid();
-          
-          // Store invitation in Supabase
-          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
-            .from('invitations')
-            .insert({
-              email,
-              role,
-              token,
-              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
-            });
+          const response = await apiInviteTeamMember(email, role);
+          console.log('Invitation URL:', response.inviteUrl);
 
-          if (error) throw error;
-
-          // Send invitation email (in a real app, this would be handled by a server)
-          const inviteUrl = `${window.location.origin}/signup?token=${token}`; // Backend Logic Found: NEEDS TO BE REFACTORED
-          console.log('Invitation URL:', inviteUrl);
-
-          // Update local state
           set((state) => ({
-            members: [...state.members, {
-              id: nanoid(),
-              email,
-              role,
-              status: 'pending',
-              invitedAt: new Date()
-            }]
+            members: [
+              ...state.members,
+              {
+                id: nanoid(),
+                email,
+                role,
+                status: 'pending',
+                invitedAt: new Date(),
+              },
+            ],
           }));
         } catch (error) {
           console.error('Error inviting team member:', error);
@@ -68,21 +54,14 @@ export const useTeamStore = create<TeamState>()(
       },
       acceptInvitation: async (email) => {
         try {
-          // Update member status in Supabase
-          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
-            .from('team_members')
-            .update({ status: 'active', accepted_at: new Date() })
-            .eq('email', email);
+          await apiAcceptInvitation(email);
 
-          if (error) throw error;
-
-          // Update local state
           set((state) => ({
-            members: state.members.map(member =>
+            members: state.members.map((member) =>
               member.email === email
                 ? { ...member, status: 'active', acceptedAt: new Date() }
                 : member
-            )
+            ),
           }));
         } catch (error) {
           console.error('Error accepting invitation:', error);
@@ -91,17 +70,10 @@ export const useTeamStore = create<TeamState>()(
       },
       removeTeamMember: async (id) => {
         try {
-          // Remove member from Supabase
-          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
-            .from('team_members')
-            .delete()
-            .eq('id', id);
+          await apiRemoveTeamMember(id);
 
-          if (error) throw error;
-
-          // Update local state
           set((state) => ({
-            members: state.members.filter(member => member.id !== id)
+            members: state.members.filter((member) => member.id !== id),
           }));
         } catch (error) {
           console.error('Error removing team member:', error);
@@ -110,28 +82,21 @@ export const useTeamStore = create<TeamState>()(
       },
       updateTeamMemberRole: async (id, role) => {
         try {
-          // Update role in Supabase
-          const { error } = await supabase // Backend Logic Found: NEEDS TO BE REFACTORED
-            .from('team_members')
-            .update({ role })
-            .eq('id', id);
+          await apiUpdateTeamMemberRole(id, role);
 
-          if (error) throw error;
-
-          // Update local state
           set((state) => ({
-            members: state.members.map(member =>
+            members: state.members.map((member) =>
               member.id === id ? { ...member, role } : member
-            )
+            ),
           }));
         } catch (error) {
-          console.error('Error updating team member role:', error);
+          console.error('Error updating role:', error);
           throw error;
         }
-      }
+      },
     }),
     {
-      name: 'team-storage'
+      name: 'team-storage',
     }
   )
 );
