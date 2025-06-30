@@ -11,7 +11,7 @@ import { fetchAllProperties } from '../api/map';
 
 
 interface MapProps {
-  properties: Property[];
+  properties: Property[]; // Backend Logic Found: Property data fetched from backend
   selectedProperty: Property | null;
   onPropertySelect: (property: Property) => void;
 }
@@ -54,6 +54,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        // Backend Logic Found: Rendering map markers using backend property data
         {properties.map((property) => {
           if (typeof property.latitude !== 'number' || typeof property.longitude !== 'number') {
             return null;

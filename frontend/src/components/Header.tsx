@@ -12,7 +12,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { askAI } from '../api/ai';
 
 
-interface HeaderProps {
+interface HeaderProps { // Backend Logic Found: Notifications data coming from backend
   notifications: Notification[];
   unreadCount: number;
   onMarkNotificationAsRead: (id: string) => void;
@@ -36,7 +36,7 @@ export default function Header({
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState('');
 
-  const handleLogout = () => {
+  const handleLogout = () => {  // Backend Logic Found: Logout process (token/session clearing on backend)
     logout();
     showToast('Successfully logged out', 'success');
     navigate('/platform');
@@ -48,7 +48,7 @@ export default function Header({
   };
 
   const handleNotificationClick = (id: string) => {
-    onMarkNotificationAsRead(id);
+    onMarkNotificationAsRead(id); // Backend Logic Found: Update notification read status in backend
     showToast('Notification marked as read', 'success');
   };
 
