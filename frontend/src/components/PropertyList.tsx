@@ -187,12 +187,11 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className={clsx(
-                'cursor-pointer rounded-lg overflow-hidden shadow-md transition-all',
+                'rounded-lg overflow-hidden shadow-md transition-all',
                 selectedProperty?.id === property.id
                   ? 'ring-2 ring-blue-500 scale-[1.02]'
                   : 'hover:scale-[1.01]'
               )}
-              onClick={() => onPropertySelect(property)}
             >
               <div className="relative">
                 <img
