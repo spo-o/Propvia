@@ -4,14 +4,14 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
 import L from 'leaflet';
 import { getValidProperties, getBounds, getMarkerIcon } from '../utils/mapHelpers';
-import { fetchAllProperties } from '../api/map';
+// import { fetchAllProperties } from '../api/map';
 
 
 
 
 
 interface MapProps {
-  properties: Property[];
+  properties: Property[]; // Backend Logic Found: Property data fetched from backend
   selectedProperty: Property | null;
   onPropertySelect: (property: Property) => void;
 }
@@ -19,7 +19,7 @@ interface MapProps {
 export default function Map({ properties, selectedProperty, onPropertySelect }: MapProps) {
   useEffect(() => {
     // Fix Leaflet icon issue
-    delete L.Icon.Default.prototype._getIconUrl;
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -54,6 +54,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        // Backend Logic Found: Rendering map markers using backend property data
         {properties.map((property) => {
           if (typeof property.latitude !== 'number' || typeof property.longitude !== 'number') {
             return null;
