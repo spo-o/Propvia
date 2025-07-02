@@ -93,7 +93,7 @@ export default function PropertyExplorer({ onSaveScenario }: PropertyExplorerPro
         </div>
       </div>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-0 ">
         {showMap ? (
           <>
             <div className="col-span-1 lg:col-span-3 relative h-[300px] lg:h-auto">

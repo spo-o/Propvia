@@ -101,7 +101,7 @@ function AppContent() {
   const renderWithLayout = (component: React.ReactNode, showSidebar = true) => (
     <div className="flex-1 flex">
       {showSidebar && <Sidebar />}
-      <main className={`flex-1 flex flex-col min-h-0 ${showSidebar ? 'lg:ml-64' : ''}`}>
+      <main className={`flex-1 flex flex-col min-h-0 ${showSidebar ? 'lg:ml-10' : ''}`}>
         <div className="flex-1 pt-16">
           {component}
         </div>
