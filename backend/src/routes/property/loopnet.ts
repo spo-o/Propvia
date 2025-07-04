@@ -61,7 +61,7 @@ router.get('/live', async (req: Request, res: Response, next: NextFunction): Pro
     );
 
     const listings = searchResponse.data?.data?.[0]?.listings || [];
-    console.log(`🔍 Found ${listings.length} listings in search`);
+    console.log(` Found ${listings.length} listings in search`);
 
     if (listings.length === 0) {
       res.json([]);
@@ -80,7 +80,7 @@ router.get('/live', async (req: Request, res: Response, next: NextFunction): Pro
       .map((item: any) => item.listingID?.toString())
       .filter((id: any) => id != null);
 
-    console.log("✅ All Listing IDs:", listingIds);
+    console.log(" All Listing IDs:", listingIds);
 
     const batches = chunkArray(listingIds, 20);
     let allDetails: any[] = [];
@@ -101,7 +101,7 @@ router.get('/live', async (req: Request, res: Response, next: NextFunction): Pro
 
       const details = bulkDetailsResponse.data?.data || [];
       allDetails = allDetails.concat(details);
-      console.log(`✅ Batch fetched ${details.length} detail(s)`);
+      console.log(` Batch fetched ${details.length} detail(s)`);
     }
 
     const simplified = allDetails.map((item: any) => {
@@ -138,7 +138,7 @@ router.get('/live', async (req: Request, res: Response, next: NextFunction): Pro
  */
 router.post('/populate', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    console.log("🌟 Starting LoopNet data fetch with pagination...");
+    console.log(" Starting LoopNet data fetch with pagination...");
 
     let allListings: any[] = [];
     let page = 1;
@@ -157,7 +157,7 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
       );
 
       const listings = liveResponse.data;
-      console.log(`✅ Page ${page}: Fetched ${listings.length} listings`);
+      console.log(` Page ${page}: Fetched ${listings.length} listings`);
 
       if (!listings.length) break;
 
@@ -171,8 +171,8 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
-    console.log(`💾 Total listings to save: ${allListings.length}`);
-    console.log('💾 Example listing:', JSON.stringify(allListings[0], null, 2));
+    console.log(` Total listings to save: ${allListings.length}`);
+    console.log(' Example listing:', JSON.stringify(allListings[0], null, 2));
 
     const enrichedListings = allListings.map((item: any) => ({
       id: item.id,
@@ -191,16 +191,16 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
       .upsert(enrichedListings, { onConflict: 'id' });
 
     if (error) {
-      console.error('❌ SUPABASE UPSERT ERROR:', JSON.stringify(error, null, 2));
+      console.error(' SUPABASE UPSERT ERROR:', JSON.stringify(error, null, 2));
       res.status(500).json({ error: 'Failed to save properties to DB', details: error });
       return;
     }
 
-    console.log(`✅ Successfully upserted ${enrichedListings.length} records.`);
+    console.log(` Successfully upserted ${enrichedListings.length} records.`);
     res.json({ message: `Stored ${enrichedListings.length} properties to DB` });
 
   } catch (err: any) {
-    console.error('❌ Populate error:', err.response?.data || err.message);
+    console.error(' Populate error:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to populate properties' });
   }
 });
@@ -220,7 +220,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
 
     const { city, zoning, minPrice, maxPrice, sortBy, sortOrder } = req.query;
 
-    console.log(`📦 Fetching from DB with filters:`, {
+    console.log(` Fetching from DB with filters:`, {
       city, zoning, minPrice, maxPrice, sortBy, sortOrder
     });
 
@@ -250,12 +250,12 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('❌ Supabase fetch error:', JSON.stringify(error, null, 2));
+      console.error(' Supabase fetch error:', JSON.stringify(error, null, 2));
       res.status(500).json({ error: 'Failed to fetch properties' });
       return;
     }
 
-    console.log(`✅ Fetched ${data?.length || 0} records from DB.`);
+    console.log(` Fetched ${data?.length || 0} records from DB.`);
 
     res.json({
       data,
@@ -267,7 +267,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
       },
     });
   } catch (err: any) {
-    console.error('❌ Error:', err.message);
+    console.error(' Error:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 });
