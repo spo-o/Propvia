@@ -104,48 +104,64 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b space-y-4">
+    <div className="h-full flex flex-col bg-white/50">
+      {/* Enhanced Search and Filter Section */}
+      <div className="p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-sm space-y-4">
+        {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search properties..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search properties by address, type, or features..."
+            className="input-field pl-12 pr-4"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        {/* Filter Section */}
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className={`flex items-center space-x-2 px-4 py-2 text-sm rounded-xl transition-all duration-200 ${
+              showFilters 
+                ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200'
+            }`}
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span>Filters</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
           </button>
           
+          {/* Active Filter Tags */}
           {Object.entries(filters).map(([key, value]) => (
             value !== 'all' && value !== 0 && (
               <motion.span
                 key={key}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full flex items-center"
+                className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded-xl flex items-center space-x-1 border border-blue-200"
               >
-                {getFilterTitle(key)}: {value}
+                <span>{getFilterTitle(key)}: {value}</span>
+                <button 
+                  onClick={() => setFilters(prev => ({ ...prev, [key]: key === 'propertyType' ? 'all' : 0 }))}
+                  className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                >
+                  <X className="w-3 h-3" />
+                </button>
               </motion.span>
             )
           ))}
         </div>
 
+        {/* Enhanced Filter Panel */}
         {showFilters && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="space-y-4 bg-gray-50 p-4 rounded-lg"
+            className="space-y-6 bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border border-gray-200/50 shadow-sm"
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
@@ -194,81 +210,172 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
         )}
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="space-y-4 p-4">
-          {paginatedProperties.map((property, index) => (
-            <PropertyCard
-              key={property.id}
-              handleAnalyzeProperty={handleAnalyzeProperty}
-              handleShare={handleShare}
-              handleViewReport={handleViewReport}
-              index={index}
-              property={property}
-              selectedProperty={selectedProperty}
-            />
-          ))}
-        </div>
+      {/* Enhanced Property Cards Section */}
+      <div className="flex-1 overflow-auto bg-white/30">
+        {paginatedProperties.length > 0 ? (
+          <div className="space-y-4 p-6">
+            {paginatedProperties.map((property, index) => (
+              <motion.div
+                key={property.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="card-elevated hover:shadow-xl transition-all duration-300"
+              >
+                <PropertyCard
+                  handleAnalyzeProperty={handleAnalyzeProperty}
+                  handleShare={handleShare}
+                  handleViewReport={handleViewReport}
+                  index={index}
+                  property={property}
+                  selectedProperty={selectedProperty}
+                />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="flex-1 flex items-center justify-center p-12">
+            <div className="text-center space-y-4">
+              <div className="bg-gray-100 rounded-full p-6 w-24 h-24 mx-auto flex items-center justify-center">
+                <Building2 className="w-12 h-12 text-gray-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Properties Found</h3>
+                <p className="text-gray-600 max-w-sm">
+                  {searchTerm ? 
+                    `No properties match "${searchTerm}". Try adjusting your search or filters.` :
+                    'No properties available in this area. Try expanding your search criteria.'
+                  }
+                </p>
+              </div>
+              {(searchTerm || Object.values(filters).some(v => v !== 'all' && v !== 0)) && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilters({ minPrice: 0, maxPrice: 1000000, propertyType: 'all', minSquareFeet: 0 });
+                  }}
+                  className="btn-accent"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Enhanced Pagination */}
       {totalPages > 1 && (
-        <div className="border-t p-4 flex items-center justify-between">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+        <div className="border-t border-gray-200/50 bg-white/80 backdrop-blur-sm p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="p-2 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 border border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600">
+              Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredProperties.length)} of {filteredProperties.length}
+            </span>
+            <div className="hidden sm:flex items-center space-x-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
+                    page === currentPage 
+                      ? 'bg-emerald-500 text-white shadow-md' 
+                      : 'hover:bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
+      {/* Enhanced Share Dialog */}
       <Dialog.Root open={!!selectedPropertyForShare} onOpenChange={() => setSelectedPropertyForShare(null)}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-          <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-xl">
-            <Dialog.Title className="text-xl font-semibold mb-4">
-              Share Property
-            </Dialog.Title>
-            
-            {selectedPropertyForShare && (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={selectedPropertyForShare.thumbnail}
-                    alt={selectedPropertyForShare.address}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h3 className="font-medium">{selectedPropertyForShare.address}</h3>
-                    <p className="text-sm text-gray-600">{selectedPropertyForShare.sqft.toLocaleString()} sqft</p>
+          <Dialog.Overlay className="dialog-overlay" />
+          <Dialog.Content className="dialog-content">
+            <div className="p-6">
+              <Dialog.Title className="text-2xl font-bold text-gray-900 mb-6 flex items-center space-x-3">
+                <div className="bg-emerald-100 rounded-xl p-2">
+                  <Share2 className="w-6 h-6 text-emerald-600" />
+                </div>
+                <span>Share Property</span>
+              </Dialog.Title>
+              
+              {selectedPropertyForShare && (
+                <div className="space-y-6">
+                  {/* Property Preview Card */}
+                  <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border border-gray-200/50">
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={selectedPropertyForShare.thumbnail}
+                        alt={selectedPropertyForShare.address}
+                        className="w-20 h-20 object-cover rounded-xl shadow-md"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900">{selectedPropertyForShare.address}</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {selectedPropertyForShare.sqft.toLocaleString()} sqft • {selectedPropertyForShare.zoning}
+                        </p>
+                        <div className="flex items-center space-x-4 mt-2">
+                          <span className="text-sm font-medium text-emerald-600">
+                            ${selectedPropertyForShare.renovationCost.toLocaleString()}
+                          </span>
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            Score: {selectedPropertyForShare.opportunityScore.overall}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Share Options */}
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => copyShareLink(selectedPropertyForShare)}
+                      className="w-full btn-brand flex items-center justify-center space-x-3"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      <span>Copy Share Link</span>
+                    </button>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <button className="flex items-center justify-center space-x-2 p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200">
+                        <span className="text-xl">📧</span>
+                        <span className="text-sm font-medium">Email</span>
+                      </button>
+                      <button className="flex items-center justify-center space-x-2 p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200">
+                        <span className="text-xl">💬</span>
+                        <span className="text-sm font-medium">Message</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-2">
-                  <button
-                    onClick={() => copyShareLink(selectedPropertyForShare)}
-                    className="w-full flex items-center justify-center space-x-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                  >
-                    <span>Copy Link</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <Dialog.Close className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-500">
-              <X className="w-5 h-5" />
-            </Dialog.Close>
+              <Dialog.Close className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all duration-200">
+                <X className="w-5 h-5" />
+              </Dialog.Close>
+            </div>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
