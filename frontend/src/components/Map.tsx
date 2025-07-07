@@ -65,9 +65,6 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
               key={property.id}
               position={[property.latitude, property.longitude]}
               icon={getMarkerIcon(property, selectedProperty)}
-              eventHandlers={{
-                click: () => onPropertySelect(property),
-              }}
             >
               <Popup>
                 <div className="p-2">
