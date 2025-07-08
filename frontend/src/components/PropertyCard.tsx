@@ -100,7 +100,7 @@ export default function PropertyCard({
                 </Tooltip.Root>
               </Tooltip.Provider>
               <div className="flex items-center justify-between mb-2 gap-2">
-                <div className="flex items-center gap-1 whitespace-nowrap">
+                <div className="flex items-center gap-1 flex-wrap">
                   <Target className="w-4 h-4 text-blue-500" />
                   <span className="text-sm font-medium">Opportunity Score</span>
                 </div>
@@ -148,7 +148,7 @@ export default function PropertyCard({
                 </Tooltip.Root>
               </Tooltip.Provider>
               <div className="flex items-center justify-between mb-2 gap-2">
-                <div className="flex items-center gap-1 whitespace-nowrap">
+                <div className="flex items-center gap-1 flex-wrap">
                   <Users2 className="w-4 h-4 text-purple-500" />
                   <span className="text-sm font-medium">Community Score</span>
                 </div>
@@ -178,28 +178,32 @@ export default function PropertyCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 whitespace-nowrap">
-            <div className="flex items-center gap-1 text-gray-600">
-              <Building2 className="w-4 h-4" />
-              <span className="text-sm">
-                {property.sqft.toLocaleString()} sqft
-              </span>
+          <div className="flex items-start justify-start bg-gray-50 p-2 gap-4 mb-4">
+            <div className="flex flex-col gap-2 items-start">
+              <div className="flex items-center gap-1 text-gray-600">
+                <Building2 className="w-4 h-4" />
+                <span className="text-sm">
+                  {property.sqft.toLocaleString()} sqft
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <DollarSign className="w-4 h-4" />
+                <span className="text-sm">
+                  ${property.renovationCost.toLocaleString()}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 text-gray-600">
-              <DollarSign className="w-4 h-4" />
-              <span className="text-sm">
-                ${property.renovationCost.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-gray-600">
-              <Users className="w-4 h-4" />
-              <span className="text-sm">
-                {property.familyPercentage}% families
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-gray-600">
-              <Calendar className="w-4 h-4" />
-              <span className="text-sm">Built {property.yearBuilt}</span>
+            <div className="flex flex-col gap-2 items-start">
+              <div className="flex items-center gap-1 text-gray-600">
+                <Users className="w-4 h-4" />
+                <span className="text-sm">
+                  {property.familyPercentage}% families
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <Calendar className="w-4 h-4" />
+                <span className="text-sm">Built {property.yearBuilt}</span>
+              </div>
             </div>
           </div>
 
