@@ -222,3 +222,10 @@ export type CustomPropertyType = {
   selected_package?: string,
   created_at?: string | null
 }
+
+export type FilterType = {
+  key: string,
+  value: string | number,
+  title: string,
+  isActive: boolean
+}

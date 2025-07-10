@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Property, SavedScenario } from "../types";
+import { FilterType, Property, SavedScenario } from "../types";
 import { properties } from "../data/mockData";
 import {
   Map as MapIcon,
@@ -39,24 +39,53 @@ export default function PropertyExplorer({
   const { isAuthenticated } = useAuthStore();
   const showToast = useToastStore(state => state.showToast);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    minPrice: 0,
-    maxPrice: 1000000,
-    propertyType: "all",
-    minSquareFeet: 0,
-  });
+  const [allFilters, setAllFilters] = useState<FilterType[]>([
+    { key: "minPrice", value: 0, title: "Min Price", isActive: false },
+    { key: "maxPrice", value: 0, title: "Max Price", isActive: false },
+    { key: "propertyType", value: "all", title: "Type", isActive: false },
+    { key: "minSquareFeet", value: 0, title: "Min SQFT", isActive: false },
+  ]);
 
   const filteredProperties = useMemo(() => {
-    return properties.filter(property => {
-      const matchesSearch = property.address.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilters =
-        property.renovationCost >= filters.minPrice &&
-        property.renovationCost <= filters.maxPrice &&
-        property.sqft >= filters.minSquareFeet &&
-        (filters.propertyType === "all" || property.zoning.toLowerCase() === filters.propertyType);
-      return matchesSearch && matchesFilters;
+    let newProperties = [...properties];
+    //check matches for the search term
+    if(searchTerm){
+      newProperties = newProperties.filter(p => p.address.toLowerCase().includes(searchTerm.toLowerCase()))
+    }
+    // check matches for each filter
+    allFilters.forEach(filter => {
+      if (filter.isActive) {
+        switch (filter.key) {
+          case "minPrice":
+            newProperties = newProperties.filter(
+              property => property.renovationCost >= (filter.value as number)
+            );
+            break;
+          case "maxPrice":
+            newProperties = newProperties.filter(
+              property => property.renovationCost <= (filter.value as number)
+            );
+            break;
+          case "propertyType":
+            if (filter.value !== "all") {
+              newProperties = newProperties.filter(
+                property =>
+                  property.zoning.toLowerCase() === (filter.value as string)
+              );
+            }
+            break;
+          case "minSquareFeet":
+            newProperties = newProperties.filter(
+              property => property.sqft >= (filter.value as number)
+            );
+            break;
+          default:
+            break;
+        }
+      }
     });
-  }, [searchTerm, filters]);
+    return newProperties;
+  }, [searchTerm, allFilters]);
 
   const handlePropertySelect = useCallback(
     (property: Property) => {
@@ -78,20 +107,28 @@ export default function PropertyExplorer({
     setShowCustomForm(true);
   };
 
-  const getFilterTitle = (filter: string) => {
-    switch (filter) {
-      case "minPrice":
-        return "Min Price";
-      case "maxPrice":
-        return "Max Price";
-      case "propertyType":
-        return "Type";
-      case "minSquareFeet":
-        return "Min SQFT";
-      default:
-        break;
+  const removeFilter = (filter: FilterType) => {
+    const newFilters = [...allFilters]
+    // find the index of the filter that was disabled
+    const index = newFilters.findIndex(f => f.key === filter.key)
+    // reset the filter to the default values
+    if(newFilters[index].key === 'propertyType'){
+      newFilters[index].value = 'all'
+    } else {
+      newFilters[index].value = 0
     }
-  };
+    newFilters[index].isActive = false
+    setAllFilters(newFilters)
+  }
+
+  const activateFilter = (filter: FilterType, value: string | number) => {
+    const newFilters = [...allFilters];
+    // find the index of the filter that was changed
+    const index = newFilters.findIndex(f => f.key === filter.key);
+    newFilters[index].value = value
+    newFilters[index].isActive = true
+    setAllFilters(newFilters)
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-gradient-to-br from-gray-50 via-white to-emerald-50/20">
@@ -205,26 +242,20 @@ export default function PropertyExplorer({
               />
             </button>
             {/* Active Filter Tags */}
-            {Object.entries(filters).map(
-              ([key, value]) =>
-                value !== "all" &&
-                value !== 0 && (
+            {allFilters.map(
+              filter =>
+                filter.isActive && (
                   <motion.span
-                    key={key}
+                    key={filter.key}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded-xl flex items-center space-x-1 border border-blue-200"
                   >
                     <span>
-                      {getFilterTitle(key)}: {value}
+                      {filter.key}: {filter.value}
                     </span>
                     <button
-                      onClick={() =>
-                        setFilters(prev => ({
-                          ...prev,
-                          [key]: key === "propertyType" ? "all" : 0,
-                        }))
-                      }
+                      onClick={() => removeFilter(filter)}
                       className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
                     >
                       <X className="w-3 h-3" />
@@ -252,24 +283,18 @@ export default function PropertyExplorer({
                         type="number"
                         placeholder="Min"
                         className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                        value={filters.minPrice}
+                        value={allFilters[0].value}
                         onChange={e =>
-                          setFilters({
-                            ...filters,
-                            minPrice: Number(e.target.value),
-                          })
+                          activateFilter(allFilters[0], Number(e.target.value))
                         }
                       />
                       <input
                         type="number"
                         placeholder="Max"
                         className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                        value={filters.maxPrice}
+                        value={allFilters[1].value}
                         onChange={e =>
-                          setFilters({
-                            ...filters,
-                            maxPrice: Number(e.target.value),
-                          })
+                          activateFilter(allFilters[1], Number(e.target.value))
                         }
                       />
                     </div>
@@ -281,9 +306,9 @@ export default function PropertyExplorer({
                     </label>
                     <select
                       className="w-full px-3 py-1 border rounded"
-                      value={filters.propertyType}
+                      value={allFilters[2].value}
                       onChange={e =>
-                        setFilters({ ...filters, propertyType: e.target.value })
+                        activateFilter(allFilters[2], e.target.value)
                       }
                     >
                       <option value="all">All</option>
@@ -300,12 +325,9 @@ export default function PropertyExplorer({
                       type="number"
                       placeholder="Min sqft"
                       className="w-full px-3 py-1 border rounded"
-                      value={filters.minSquareFeet}
+                      value={allFilters[3].value}
                       onChange={e =>
-                        setFilters({
-                          ...filters,
-                          minSquareFeet: Number(e.target.value),
-                        })
+                        activateFilter(allFilters[3], Number(e.target.value))
                       }
                     />
                   </div>
