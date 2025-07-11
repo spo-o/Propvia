@@ -28,7 +28,7 @@ const privateNavigation = [
 ];
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 1024);
+  const [isOpen, setIsOpen] = useState(false); // Default to closed for full width view
   const { isAuthenticated } = useAuthStore();
 
   const navigation = isAuthenticated 
@@ -37,37 +37,44 @@ export default function Sidebar() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsOpen(true);
-      } else {
+      // Don't auto-open on resize, let user control sidebar
+      if (window.innerWidth < 1024 && isOpen) {
         setIsOpen(false);
       }
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isOpen]);
 
   return (
     <>
+      {/* Modern floating toggle button with proper positioning */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-20 left-4 z-50 p-2.5 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 lg:hidden border border-gray-200/50"
+        className="fixed top-24 left-6 z-50 p-2.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 group hover:scale-105"
+        title={isOpen ? "Close Sidebar" : "Open Sidebar"}
       >
-        {isOpen ? <X className="w-4 h-4 text-gray-700" /> : <Menu className="w-4 h-4 text-gray-700" />}
+        <div className="relative">
+          {isOpen ? (
+            <X className="w-4 h-4 text-gray-700 group-hover:text-gray-900 transition-colors" />
+          ) : (
+            <Menu className="w-4 h-4 text-gray-700 group-hover:text-gray-900 transition-colors" />
+          )}
+        </div>
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <>
             <motion.div
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed top-0 left-0 z-40 h-screen bg-white/98 backdrop-blur-xl border-r border-gray-200/60 shadow-2xl overflow-y-auto pt-16 lg:pt-20 lg:relative lg:shadow-none lg:bg-white lg:backdrop-blur-none lg:w-64"
+              initial={{ x: -300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -300, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0.1, duration: 0.5 }}
+              className="fixed top-0 left-0 z-40 h-screen bg-white/98 backdrop-blur-xl border-r border-gray-200/60 shadow-2xl overflow-y-auto pt-20 w-72"
             >
-              <div className="w-64 lg:w-full p-4">
+              <div className="w-72 p-4">
                 <div className="mb-4">
                   <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                     Navigation
@@ -85,7 +92,7 @@ export default function Sidebar() {
                             : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 hover:text-gray-900 border border-transparent hover:border-gray-200/50'
                         }`
                       }
-                      onClick={() => window.innerWidth < 1024 && setIsOpen(false)}
+                      onClick={() => setIsOpen(false)} // Always close on navigation for cleaner UX
                     >
                       {({ isActive }) => (
                         <>
@@ -122,15 +129,14 @@ export default function Sidebar() {
               </div>
             </motion.div>
 
-            {window.innerWidth < 1024 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
-                onClick={() => setIsOpen(false)}
-              />
-            )}
+            {/* Backdrop overlay - always show when sidebar is open */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-30"
+              onClick={() => setIsOpen(false)}
+            />
           </>
         )}
       </AnimatePresence>

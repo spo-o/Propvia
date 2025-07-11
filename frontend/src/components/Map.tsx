@@ -44,6 +44,25 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
             background: none;
             border: none;
           }
+          .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+          }
+          .leaflet-control-zoom a {
+            border-radius: 8px !important;
+            border: none !important;
+            background: white !important;
+            color: #374151 !important;
+            font-weight: 600 !important;
+            box-shadow: none !important;
+          }
+          .leaflet-control-zoom a:hover {
+            background: #f3f4f6 !important;
+          }
+          .leaflet-popup-content-wrapper {
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+          }
         `}
       </style>
       <MapContainer
