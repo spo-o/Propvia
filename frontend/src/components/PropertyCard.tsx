@@ -12,6 +12,7 @@ import {
   Share2,
   Star,
   Target,
+  TrendingUp,
   Users,
   Users2,
 } from "lucide-react";
@@ -44,12 +45,15 @@ export default function PropertyCard({
     return "text-red-600";
   };
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
       className={clsx(
         "relative transition-all duration-200",
         selectedProperty?.id === property.id
-          ? "ring-2 ring-blue-500 bg-blue-50/50"
-          : "hover:bg-gray-50/50"
+          ? "ring-2 ring-blue-500 shadow-blue-100"
+          : "hover:border-gray-200"
       )}
     >
       <div className="p-4">
@@ -205,23 +209,25 @@ export default function PropertyCard({
           </div>
         </div>
 
-        {/* Quick Info */}
-        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-          <span className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            {property.familyPercentage}% families
-          </span>
-          <span className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            Built {property.yearBuilt}
-          </span>
+        {/* Quick Stats */}
+        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-gray-500" />
+              <span className="text-gray-600">{property.familyPercentage}% families</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-gray-500" />
+              <span className="text-gray-600">High potential</span>
+            </div>
+          </div>
         </div>
 
         {/* Expandable Overview */}
-        <details className="mb-4">
-          <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 p-2 bg-gray-50 rounded-lg">
+        <details className="mb-6 group/details">
+          <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 p-3 bg-gray-50 rounded-xl transition-all duration-200 group-hover/details:bg-gray-100">
             <span>Building Overview</span>
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4 transition-transform duration-200 group-open/details:rotate-180" />
           </summary>
           <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-2">
             <p className="text-sm text-gray-600">
@@ -241,13 +247,16 @@ export default function PropertyCard({
         </details>
 
         {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <button
-            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             onClick={e => handleAnalyzeProperty(e, property)}
           >
             {isAuthenticated ? (
-              "Analyze Property"
+              <>
+                <Target className="w-4 h-4" />
+                <span>Analyze Property</span>
+              </>
             ) : (
               <>
                 <Lock className="w-4 h-4" />
@@ -255,19 +264,20 @@ export default function PropertyCard({
               </>
             )}
           </button>
+          
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <button
-                  className="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                   onClick={e => handleViewReport(e, property.id)}
                 >
-                  <FileText className="w-4 h-4 text-gray-600" />
+                  <FileText className="w-5 h-5 text-gray-600" />
                 </button>
               </Tooltip.Trigger>
               <Tooltip.Portal>
                 <Tooltip.Content
-                  className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm z-50"
+                  className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm z-50 shadow-lg"
                   sideOffset={5}
                 >
                   View Full Report
@@ -277,6 +287,6 @@ export default function PropertyCard({
           </Tooltip.Provider>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -325,11 +325,11 @@ export default function PropertyExplorer({
       {/* Modern Content Layout */}
       <div className="flex-1 overflow-hidden">
         {showMap ? (
-          /* Map + Sidebar Layout */
+          /* Map + Sidebar Layout with fixed spacing */
           <div className="h-full flex">
-            {/* Map Container */}
+            {/* Map Container - takes remaining space */}
             <div className="flex-1 relative">
-              <div className="absolute inset-0">
+              <div className="absolute inset-0 bg-white shadow-sm border-r border-gray-200/60 overflow-hidden">
                 <Map
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
@@ -345,7 +345,7 @@ export default function PropertyExplorer({
                   <Building2 className="w-5 h-5 text-blue-600" />
                   <span>Properties ({filteredProperties.length})</span>
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">Click on map markers or browse below</p>
+                <p className="text-sm text-gray-600 mt-2">Click markers or browse cards below</p>
               </div>
               <div className="flex-1 overflow-auto">
                 <PropertyList
@@ -357,28 +357,33 @@ export default function PropertyExplorer({
             </div>
           </div>
         ) : (
-          /* Full Grid Layout */
-          <div className="h-full bg-white">
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50/30">
+          /* Improved Full Grid Layout */
+          <div className="h-full bg-gray-50/30">
+            <div className="p-6 border-b border-gray-200/60 bg-white/95 backdrop-blur-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <Grid className="w-6 h-6 text-blue-600" />
+                  <div className="bg-gradient-to-br from-blue-500 to-emerald-500 rounded-xl p-2.5 shadow-sm">
+                    <Grid className="w-5 h-5 text-white" />
+                  </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">All Properties</h3>
-                    <p className="text-sm text-gray-600">Comprehensive grid view of {filteredProperties.length} properties</p>
+                    <h3 className="text-xl font-semibold text-gray-900">Property Gallery</h3>
+                    <p className="text-sm text-gray-600">Discover {filteredProperties.length} premium investment opportunities</p>
                   </div>
                 </div>
-                <div className="text-sm text-gray-500">
-                  Updated just now
+                <div className="flex items-center space-x-2 text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Live data</span>
                 </div>
               </div>
             </div>
-            <div className="h-[calc(100%-120px)] overflow-auto">
-              <PropertyList
-                properties={filteredProperties}
-                selectedProperty={selectedProperty}
-                onPropertySelect={handlePropertySelect}
-              />
+            <div className="h-[calc(100%-88px)] overflow-auto">
+              <div className="max-w-7xl mx-auto">
+                <PropertyList
+                  properties={filteredProperties}
+                  selectedProperty={selectedProperty}
+                  onPropertySelect={handlePropertySelect}
+                />
+              </div>
             </div>
           </div>
         )}

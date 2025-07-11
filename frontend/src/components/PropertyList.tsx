@@ -104,43 +104,36 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Streamlined Property Cards Section */}
+    <div className="h-full flex flex-col bg-gray-50/30">
+      {/* Modern Property Cards Section */}
       <div className="flex-1 overflow-auto">
         {paginatedProperties.length > 0 ? (
-          <div className="space-y-3 p-4">
+          <div className="p-6 space-y-6">
             {paginatedProperties.map((property, index) => (
-              <motion.div
+              <PropertyCard
                 key={property.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
-              >
-                <PropertyCard
-                  handleAnalyzeProperty={handleAnalyzeProperty}
-                  handleShare={handleShare}
-                  handleViewReport={handleViewReport}
-                  index={index}
-                  property={property}
-                  selectedProperty={selectedProperty}
-                />
-              </motion.div>
+                handleAnalyzeProperty={handleAnalyzeProperty}
+                handleShare={handleShare}
+                handleViewReport={handleViewReport}
+                index={index}
+                property={property}
+                selectedProperty={selectedProperty}
+              />
             ))}
           </div>
         ) : (
-          /* Compact Empty State */
+          /* Improved Empty State */
           <div className="flex-1 flex items-center justify-center p-8">
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-3 max-w-sm">
               <div className="bg-gray-100 rounded-2xl p-4 w-16 h-16 mx-auto flex items-center justify-center">
                 <Building2 className="w-8 h-8 text-gray-400" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">No Properties Found</h3>
-                <p className="text-gray-600 text-sm max-w-xs">
+                <p className="text-gray-600 text-sm leading-relaxed">
                   {searchTerm ? 
                     `No matches for "${searchTerm}". Try different keywords.` :
-                    'No properties available. Adjust your filters to see more results.'
+                    'No properties available with the current filters.'
                   }
                 </p>
               </div>
@@ -152,7 +145,7 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
                   }}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
                 >
-                  Clear Filters
+                  Clear All Filters
                 </button>
               )}
             </div>
@@ -160,28 +153,28 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
         )}
       </div>
 
-      {/* Compact Pagination */}
+      {/* Modern Pagination */}
       {totalPages > 1 && (
-        <div className="border-t border-gray-100 bg-white px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-1">
+        <div className="border-t border-gray-200/60 bg-white/95 backdrop-blur-sm px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-sm"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-sm"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
           
-          <div className="flex items-center space-x-3">
-            <span className="text-xs text-gray-600">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600 font-medium">
               {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredProperties.length)} of {filteredProperties.length}
             </span>
             <div className="hidden sm:flex items-center space-x-1">
@@ -200,10 +193,10 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-2.5 py-1 rounded-md text-xs transition-all duration-200 ${
+                    className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                       page === currentPage 
-                        ? 'bg-blue-500 text-white shadow-sm' 
-                        : 'hover:bg-gray-100 text-gray-600'
+                        ? 'bg-blue-500 text-white shadow-md' 
+                        : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
                     }`}
                   >
                     {page}
