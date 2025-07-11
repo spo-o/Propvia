@@ -52,9 +52,9 @@ export default function Sidebar() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-20 left-4 z-50 p-3 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 lg:hidden border border-gray-200/50"
+        className="fixed top-20 left-4 z-50 p-2.5 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 lg:hidden border border-gray-200/50"
       >
-        {isOpen ? <X className="w-5 h-5 text-gray-700" /> : <Menu className="w-5 h-5 text-gray-700" />}
+        {isOpen ? <X className="w-4 h-4 text-gray-700" /> : <Menu className="w-4 h-4 text-gray-700" />}
       </button>
 
       <AnimatePresence>
@@ -65,21 +65,21 @@ export default function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed top-0 left-0 z-40 h-screen bg-white/95 backdrop-blur-md border-r border-gray-200/50 shadow-2xl overflow-y-auto pt-16 lg:pt-20 lg:relative lg:shadow-none lg:bg-white lg:backdrop-blur-none"
+              className="fixed top-0 left-0 z-40 h-screen bg-white/98 backdrop-blur-xl border-r border-gray-200/60 shadow-2xl overflow-y-auto pt-16 lg:pt-20 lg:relative lg:shadow-none lg:bg-white lg:backdrop-blur-none lg:w-64"
             >
-              <div className="w-72 p-6">
-                <div className="mb-6">
-                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              <div className="w-64 lg:w-full p-4">
+                <div className="mb-4">
+                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                     Navigation
                   </h2>
                 </div>
-                <nav className="space-y-2">
+                <nav className="space-y-1">
                   {navigation.map((item) => (
                     <NavLink
                       key={item.name}
                       to={item.path}
                       className={({ isActive }) =>
-                        `group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
+                        `group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
                           isActive
                             ? 'bg-gradient-to-r from-brand/10 to-brand/5 text-brand border border-brand/20 shadow-sm'
                             : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 hover:text-gray-900 border border-transparent hover:border-gray-200/50'
@@ -89,12 +89,12 @@ export default function Sidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-3 transition-all duration-200 ${
+                          <div className={`flex items-center justify-center w-7 h-7 rounded-lg mr-2.5 transition-all duration-200 ${
                             isActive ? 'bg-brand/10 text-brand' : 'bg-gray-100 text-gray-500 group-hover:bg-brand/10 group-hover:text-brand'
                           }`}>
                             <item.icon className="w-4 h-4" />
                           </div>
-                          <span className="font-medium">{item.name}</span>
+                          <span className="font-medium text-sm">{item.name}</span>
                           {isActive && (
                             <div className="ml-auto w-2 h-2 bg-brand rounded-full"></div>
                           )}
@@ -105,11 +105,11 @@ export default function Sidebar() {
                 </nav>
                 
                 {isAuthenticated && (
-                  <div className="mt-8 pt-6 border-t border-gray-200/50">
-                    <div className="p-4 bg-gradient-to-br from-brand/5 to-accent/5 rounded-xl border border-brand/10">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-brand to-brand-600 rounded-lg flex items-center justify-center">
-                          <Building2 className="w-4 h-4 text-white" />
+                  <div className="mt-6 pt-4 border-t border-gray-200/50">
+                    <div className="p-3 bg-gradient-to-br from-brand/5 to-accent/5 rounded-xl border border-brand/10">
+                      <div className="flex items-center space-x-2.5">
+                        <div className="w-7 h-7 bg-gradient-to-br from-brand to-brand-600 rounded-lg flex items-center justify-center">
+                          <Building2 className="w-3.5 h-3.5 text-white" />
                         </div>
                         <div>
                           <p className="text-xs font-medium text-gray-600">Propvia Platform</p>

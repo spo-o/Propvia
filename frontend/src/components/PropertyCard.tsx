@@ -43,227 +43,173 @@ export default function PropertyCard({
     if (score >= 60) return "text-yellow-600";
     return "text-red-600";
   };
-
   return (
-    <div>
-      <motion.div
-        key={property.id}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
-        className={clsx(
-          "rounded-lg overflow-hidden shadow-md transition-all",
-          selectedProperty?.id === property.id
-            ? "ring-2 ring-blue-500 scale-[1.02]"
-            : "hover:scale-[1.01]"
-        )}
-      >
-        <div className="relative">
+    <div
+      className={clsx(
+        "relative transition-all duration-200 cursor-pointer",
+        selectedProperty?.id === property.id
+          ? "ring-2 ring-blue-500 bg-blue-50/50"
+          : "hover:bg-gray-50/50"
+      )}
+      onClick={e => handleAnalyzeProperty(e, property)}
+    >
+      <div className="p-4">
+        {/* Header Section */}
+        <div className="flex items-start gap-4 mb-4">
           <img
             src={property.thumbnail}
             alt={property.address}
-            className="w-full h-48 object-cover"
+            className="w-20 h-20 object-cover rounded-xl flex-shrink-0 shadow-sm"
           />
-          <button
-            onClick={e => handleShare(property, e)}
-            className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
-          >
-            <Share2 className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-
-        <div className="p-4 bg-white">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
-            <h3 className="font-semibold text-lg">{property.address}</h3>
-            <span className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h3 className="font-semibold text-gray-900 text-base truncate">{property.address}</h3>
+              <button
+                onClick={e => handleShare(property, e)}
+                className="p-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              >
+                <Share2 className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
+              <span className="flex items-center gap-1">
+                <Building2 className="w-4 h-4" />
+                {property.sqft.toLocaleString()} sqft
+              </span>
+              <span className="flex items-center gap-1">
+                <DollarSign className="w-4 h-4" />
+                ${property.renovationCost.toLocaleString()}
+              </span>
+            </div>
+            <span className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
               {property.zoning}
             </span>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <span className="ml-auto flex w-fit">
-                      <Info className="w-4 h-4" />
-                    </span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      className="bg-gray-900 text-white px-3 py-2 rounded text-sm max-w-xs"
-                      sideOffset={5}
-                    >
-                      The Opportunity Score reflects the property's potential for growth, ROI, and market conditions.
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-              <div className="flex items-center justify-between mb-2 gap-2">
-                <div className="flex items-center gap-1 flex-wrap">
-                  <Target className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium">Opportunity Score</span>
-                </div>
-                <span
-                  className={clsx(
-                    "text-lg font-bold",
-                    getScoreColor(property.opportunityScore.overall)
-                  )}
-                >
-                  {property.opportunityScore.overall}%
-                </span>
+        {/* Scores Section */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1">
+                <Target className="w-4 h-4 text-blue-500" />
+                <span className="text-xs font-medium text-gray-700">Opportunity</span>
               </div>
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Growth</span>
-                  <span>{property.opportunityScore.growth}%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">ROI</span>
-                  <span>{property.opportunityScore.roi}%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Market</span>
-                  <span>{property.opportunityScore.market}%</span>
-                </div>
-              </div>
+              <span className={clsx("text-lg font-bold", getScoreColor(property.opportunityScore.overall))}>
+                {property.opportunityScore.overall}%
+              </span>
             </div>
-
-            <div className="p-2 bg-gray-50 rounded-lg">
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <span className="ml-auto flex w-fit">
-                      <Info className="w-4 h-4" />
-                    </span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Portal>
-                    <Tooltip.Content
-                      className="bg-gray-900 text-white px-3 py-2 rounded text-sm max-w-xs"
-                      sideOffset={5}
-                    >
-                      The Community Score reflects diversity, engagement, and available services in the property's neighborhood.
-                    </Tooltip.Content>
-                  </Tooltip.Portal>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-              <div className="flex items-center justify-between mb-2 gap-2">
-                <div className="flex items-center gap-1 flex-wrap">
-                  <Users2 className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm font-medium">Community Score</span>
-                </div>
-                <span
-                  className={clsx(
-                    "text-lg font-bold",
-                    getScoreColor(property.communityScore.overall)
-                  )}
-                >
-                  {property.communityScore.overall}%
-                </span>
+            <div className="grid grid-cols-3 gap-1 text-xs">
+              <div className="text-center">
+                <div className="text-gray-500">Growth</div>
+                <div className="font-medium">{property.opportunityScore.growth}%</div>
               </div>
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Diversity</span>
-                  <span>{property.communityScore.diversity}%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Engagement</span>
-                  <span>{property.communityScore.engagement}%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Services</span>
-                  <span>{property.communityScore.services}%</span>
-                </div>
+              <div className="text-center">
+                <div className="text-gray-500">ROI</div>
+                <div className="font-medium">{property.opportunityScore.roi}%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Market</div>
+                <div className="font-medium">{property.opportunityScore.market}%</div>
               </div>
             </div>
           </div>
 
-          <div className="flex items-start justify-start bg-gray-50 p-2 gap-4 mb-4">
-            <div className="flex flex-col gap-2 items-start">
-              <div className="flex items-center gap-1 text-gray-600">
-                <Building2 className="w-4 h-4" />
-                <span className="text-sm">
-                  {property.sqft.toLocaleString()} sqft
-                </span>
+          <div className="bg-gray-50 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1">
+                <Users2 className="w-4 h-4 text-purple-500" />
+                <span className="text-xs font-medium text-gray-700">Community</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-600">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm">
-                  ${property.renovationCost.toLocaleString()}
-                </span>
+              <span className={clsx("text-lg font-bold", getScoreColor(property.communityScore.overall))}>
+                {property.communityScore.overall}%
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 text-xs">
+              <div className="text-center">
+                <div className="text-gray-500">Diversity</div>
+                <div className="font-medium">{property.communityScore.diversity}%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Engage</div>
+                <div className="font-medium">{property.communityScore.engagement}%</div>
+              </div>
+              <div className="text-center">
+                <div className="text-gray-500">Services</div>
+                <div className="font-medium">{property.communityScore.services}%</div>
               </div>
             </div>
-            <div className="flex flex-col gap-2 items-start">
-              <div className="flex items-center gap-1 text-gray-600">
-                <Users className="w-4 h-4" />
-                <span className="text-sm">
-                  {property.familyPercentage}% families
-                </span>
-              </div>
-              <div className="flex items-center gap-1 text-gray-600">
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm">Built {property.yearBuilt}</span>
-              </div>
-            </div>
-          </div>
-
-          <details className="mb-4">
-            <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
-              <span>Building Overview</span>
-              <ChevronDown className="w-4 h-4" />
-            </summary>
-            <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-2">
-              <p className="text-sm text-gray-600">
-                {property.buildingOverview.description}
-              </p>
-              <div className="space-y-1">
-                {property.buildingOverview.highlights.map((highlight, i) => (
-                  <div key={i} className="flex items-center space-x-2 text-sm">
-                    <Star className="w-3 h-3 text-yellow-500" />
-                    <span>{highlight}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </details>
-
-          <div className="flex flex-col sm:flex-row gap-2">
-            <button
-              className="flex-1 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
-              onClick={e => handleAnalyzeProperty(e, property)}
-            >
-              {isAuthenticated ? (
-                "Analyze Property"
-              ) : (
-                <div className="flex items-center justify-center space-x-2">
-                  <Lock className="w-4 h-4" />
-                  <span>Sign in to Analyze</span>
-                </div>
-              )}
-            </button>
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <button
-                    className="flex items-center justify-center p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                    onClick={e => handleViewReport(e, property.id)}
-                  >
-                    <FileText className="w-5 h-5 text-gray-600" />
-                  </button>
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Content
-                    className="bg-gray-900 text-white px-3 py-2 rounded text-sm"
-                    sideOffset={5}
-                  >
-                    View Full Report
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              </Tooltip.Root>
-            </Tooltip.Provider>
           </div>
         </div>
-      </motion.div>
+
+        {/* Quick Info */}
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+          <span className="flex items-center gap-1">
+            <Users className="w-4 h-4" />
+            {property.familyPercentage}% families
+          </span>
+          <span className="flex items-center gap-1">
+            <Calendar className="w-4 h-4" />
+            Built {property.yearBuilt}
+          </span>
+        </div>
+
+        {/* Expandable Overview */}
+        <details className="mb-4">
+          <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 p-2 bg-gray-50 rounded-lg">
+            <span>Building Overview</span>
+            <ChevronDown className="w-4 h-4" />
+          </summary>
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-2">
+            <p className="text-sm text-gray-600">{property.buildingOverview.description}</p>
+            <div className="space-y-1">
+              {property.buildingOverview.highlights.slice(0, 3).map((highlight, i) => (
+                <div key={i} className="flex items-center space-x-2 text-sm">
+                  <Star className="w-3 h-3 text-yellow-500 flex-shrink-0" />
+                  <span className="text-gray-700">{highlight}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <button
+            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2"
+            onClick={e => handleAnalyzeProperty(e, property)}
+          >
+            {isAuthenticated ? (
+              "Analyze Property"
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                <span>Sign in to Analyze</span>
+              </>
+            )}
+          </button>
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <button
+                  className="p-2.5 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  onClick={e => handleViewReport(e, property.id)}
+                >
+                  <FileText className="w-4 h-4 text-gray-600" />
+                </button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm z-50"
+                  sideOffset={5}
+                >
+                  View Full Report
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
+        </div>
+      </div>
     </div>
   );
 }

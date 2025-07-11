@@ -131,205 +131,189 @@ export default function PropertyExplorer({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] bg-gradient-to-br from-gray-50 via-white to-emerald-50/20">
-      {/* Enhanced Header Section */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
-        <div className="p-4 md:p-6 ">
-          {/* Title and Stats Row */}
-          <div className="mb-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3">
-                <div className="bg-emerald-100 rounded-xl p-3">
-                  <Building2 className="w-6 h-6 text-emerald-600" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    Property Explorer
-                  </h1>
-                  <p className="text-gray-600 text-lg">
-                    Discover and analyze commercial properties in real-time
-                  </p>
-                </div>
+    <div className="flex flex-col h-[calc(100vh-64px)] bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+      {/* Modern Compact Header */}
+      <div className="bg-white/95 backdrop-blur-xl border-b border-gray-200/60 shadow-sm">
+        <div className="px-6 py-4">
+          {/* Streamlined Header Row */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
+            <div className="flex items-center space-x-4">
+              <div className="bg-gradient-to-br from-blue-500 to-emerald-500 rounded-2xl p-3 shadow-lg">
+                <Building2 className="w-6 h-6 text-white" />
               </div>
-
-              {/* Quick Stats */}
-              <div className="flex items-center space-x-6 mt-4">
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="bg-blue-100 rounded-full p-1">
-                    <MapPin className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <span className="text-gray-600">
-                    <span className="font-semibold text-gray-900">
-                      {filteredProperties.length}
-                    </span>{" "}
-                    Properties
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Property Explorer</h1>
+                <div className="flex items-center space-x-4 mt-1">
+                  <span className="text-sm text-gray-600">
+                    <span className="font-semibold text-blue-600">{filteredProperties.length}</span> properties
                   </span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="bg-green-100 rounded-full p-1">
-                    <TrendingUp className="w-4 h-4 text-green-600" />
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-600">Live data</span>
                   </div>
-                  <span className="text-gray-600">
-                    <span className="font-semibold text-gray-900">Live</span>{" "}
-                    Analysis
-                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-4 w-full lg:w-auto">
+            {/* Compact Action Bar */}
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => requestAnalysisClick()}
-                className="flex-1 lg:flex-none btn-brand flex items-center justify-center space-x-2"
+                className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-2 font-medium"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 <span>Request Analysis</span>
               </button>
 
-              {/* Enhanced View Toggle */}
-              <div className="glass-card p-1 flex space-x-1">
+              {/* Modern View Toggle */}
+              <div className="bg-gray-100 rounded-xl p-1 flex">
                 <button
                   onClick={() => setShowMap(true)}
-                  className={`p-3 rounded-xl transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                     showMap
-                      ? "bg-emerald-500 text-white shadow-md"
-                      : "hover:bg-white/50 text-gray-600"
+                      ? "bg-white text-blue-600 shadow-md"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  <MapIcon className="w-5 h-5" />
+                  <MapIcon className="w-4 h-4" />
+                  <span className="text-sm font-medium">Map</span>
                 </button>
                 <button
                   onClick={() => setShowMap(false)}
-                  className={`p-3 rounded-xl transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                     !showMap
-                      ? "bg-emerald-500 text-white shadow-md"
-                      : "hover:bg-white/50 text-gray-600"
+                      ? "bg-white text-blue-600 shadow-md"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  <Grid className="w-5 h-5" />
+                  <Grid className="w-4 h-4" />
+                  <span className="text-sm font-medium">Grid</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Enhanced Search and Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          {/* Streamlined Search Bar */}
+          <div className="flex gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search properties by address, neighborhood, or building type..."
-                className="input-field pl-12 pr-4 py-4 text-lg"
+                placeholder="Search by address, neighborhood, or property type..."
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center space-x-2 px-6 py-4 rounded-xl  transition-all duration-200 shadow-sm hover:shadow-md ${
+              className={`px-4 py-3 rounded-xl transition-all duration-200 flex items-center space-x-2 border ${
                 showFilters
-                  ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                  : "bg-gray-100 hover:bg-gray-50 text-gray-700 border border-gray-300"
+                  ? "bg-blue-50 text-blue-700 border-blue-200"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
               }`}
             >
-              <Filter className="w-5 h-5 text-gray-600" />
-              <span className="text-gray-700 font-medium">Filters</span>
+              <Filter className="w-4 h-4" />
+              <span className="hidden sm:inline font-medium">Filters</span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
                   showFilters ? "rotate-180" : ""
                 }`}
               />
             </button>
-            {/* Active Filter Tags */}
-            {allFilters.map(
-              filter =>
-                filter.isActive && (
-                  <motion.span
-                    key={filter.key}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="px-3 py-2 text-xs bg-blue-100 text-blue-800 rounded-xl flex items-center space-x-1 border border-blue-200"
-                  >
-                    <span>
-                      {filter.key}: {filter.value}
-                    </span>
-                    <button
-                      onClick={() => removeFilter(filter)}
-                      className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </motion.span>
-                )
-            )}
           </div>
-          {/* Enhanced Filter Panel */}
+
+          {/* Active Filter Pills */}
+          {allFilters.some(filter => filter.isActive) && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {allFilters.map(
+                filter =>
+                  filter.isActive && (
+                    <motion.span
+                      key={filter.key}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg flex items-center space-x-2 border border-blue-200"
+                    >
+                      <span className="font-medium">{filter.title}:</span>
+                      <span>{filter.value}</span>
+                      <button
+                        onClick={() => removeFilter(filter)}
+                        className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </motion.span>
+                  )
+              )}
+            </div>
+          )}
+
+          {/* Compact Filter Panel */}
           <AnimatePresence>
             {showFilters && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200/50 shadow-sm"
+                className="overflow-hidden"
               >
-                <div className="p-6 space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Price Range
-                    </label>
-                    <div className="flex flex-col sm:flex-row gap-2">
+                <div className="mt-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-xl border border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                      <div className="space-y-2">
+                        <input
+                          type="number"
+                          placeholder="Min price"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                          value={allFilters[0].value || ''}
+                          onChange={e => activateFilter(allFilters[0], Number(e.target.value))}
+                        />
+                        <input
+                          type="number"
+                          placeholder="Max price"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                          value={allFilters[1].value || ''}
+                          onChange={e => activateFilter(allFilters[1], Number(e.target.value))}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                      <select
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                        value={allFilters[2].value}
+                        onChange={e => activateFilter(allFilters[2], e.target.value)}
+                      >
+                        <option value="all">All Types</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="mixed-use">Mixed-Use</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Min Square Feet</label>
                       <input
                         type="number"
-                        placeholder="Min"
-                        className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                        value={allFilters[0].value}
-                        onChange={e =>
-                          activateFilter(allFilters[0], Number(e.target.value))
-                        }
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                        value={allFilters[1].value}
-                        onChange={e =>
-                          activateFilter(allFilters[1], Number(e.target.value))
-                        }
+                        placeholder="Min sqft"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                        value={allFilters[3].value || ''}
+                        onChange={e => activateFilter(allFilters[3], Number(e.target.value))}
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Property Type
-                    </label>
-                    <select
-                      className="w-full px-3 py-1 border rounded"
-                      value={allFilters[2].value}
-                      onChange={e =>
-                        activateFilter(allFilters[2], e.target.value)
-                      }
-                    >
-                      <option value="all">All</option>
-                      <option value="commercial">Commercial</option>
-                      <option value="mixed-use">Mixed-Use</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Minimum Square Feet
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="Min sqft"
-                      className="w-full px-3 py-1 border rounded"
-                      value={allFilters[3].value}
-                      onChange={e =>
-                        activateFilter(allFilters[3], Number(e.target.value))
-                      }
-                    />
+                    <div className="flex items-end">
+                      <button
+                        onClick={() => {
+                          setAllFilters(prev => prev.map(f => ({ ...f, isActive: false, value: f.key === 'propertyType' ? 'all' : 0 })));
+                        }}
+                        className="w-full px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Clear All
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -338,13 +322,14 @@ export default function PropertyExplorer({
         </div>
       </div>
 
-      {/* Enhanced Content Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 min-h-0 overflow-hidden">
+      {/* Modern Content Layout */}
+      <div className="flex-1 overflow-hidden">
         {showMap ? (
-          <>
-            {/* Map Section with Enhanced Border */}
-            <div className="col-span-1 lg:col-span-3 relative h-[400px] lg:h-auto">
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-tl-2xl lg:rounded-none border border-gray-200/50">
+          /* Map + Sidebar Layout */
+          <div className="h-full flex">
+            {/* Map Container */}
+            <div className="flex-1 relative">
+              <div className="absolute inset-0">
                 <Map
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
@@ -353,9 +338,16 @@ export default function PropertyExplorer({
               </div>
             </div>
 
-            {/* Property List Section with Enhanced Styling */}
-            <div className="col-span-1 lg:col-span-2 bg-white/80 backdrop-blur-sm border-t lg:border-l border-gray-200/50 lg:rounded-tr-2xl overflow-hidden">
-              <div className="h-full overflow-auto">
+            {/* Property Sidebar */}
+            <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+              <div className="p-4 border-b border-gray-200 bg-gray-50">
+                <h3 className="font-semibold text-gray-900 flex items-center space-x-2">
+                  <Building2 className="w-5 h-5 text-blue-600" />
+                  <span>Properties ({filteredProperties.length})</span>
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">Click on map markers or browse below</p>
+              </div>
+              <div className="flex-1 overflow-auto">
                 <PropertyList
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
@@ -363,20 +355,25 @@ export default function PropertyExplorer({
                 />
               </div>
             </div>
-          </>
+          </div>
         ) : (
-          /* Grid View with Enhanced Container */
-          <div className="col-span-1 lg:col-span-5 bg-white/80 backdrop-blur-sm overflow-hidden rounded-t-2xl border border-gray-200/50">
-            <div className="h-full overflow-auto">
-              <div className="p-4 border-b border-gray-200/50 bg-white/50">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                  <Grid className="w-5 h-5 text-emerald-600" />
-                  <span>All Properties ({filteredProperties.length})</span>
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">
-                  Comprehensive list view of all available properties
-                </p>
+          /* Full Grid Layout */
+          <div className="h-full bg-white">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Grid className="w-6 h-6 text-blue-600" />
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">All Properties</h3>
+                    <p className="text-sm text-gray-600">Comprehensive grid view of {filteredProperties.length} properties</p>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500">
+                  Updated just now
+                </div>
               </div>
+            </div>
+            <div className="h-[calc(100%-120px)] overflow-auto">
               <PropertyList
                 properties={filteredProperties}
                 selectedProperty={selectedProperty}
