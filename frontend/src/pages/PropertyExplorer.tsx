@@ -159,7 +159,7 @@ export default function PropertyExplorer({
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => requestAnalysisClick()}
-                className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-2 font-medium"
+                className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all duration-200 flex items-center space-x-2 font-medium whitespace-nowrap"
               >
                 <Plus className="w-4 h-4" />
                 <span>Request Analysis</span>
@@ -339,7 +339,7 @@ export default function PropertyExplorer({
             </div>
 
             {/* Property Sidebar */}
-            <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+            <div className="w-96 hidden  bg-white border-l border-gray-200 lg:flex flex-col">
               <div className="p-4 border-b border-gray-200 bg-gray-50">
                 <h3 className="font-semibold text-gray-900 flex items-center space-x-2">
                   <Building2 className="w-5 h-5 text-blue-600" />
