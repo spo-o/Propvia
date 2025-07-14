@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import { supabaseAdmin } from '../../services/supabaseClient';
 import { sendConfirmationEmail } from '../../utils/emailSender';
+import { generatePdf } from '../../utils/pdfGenerator';
 
 dotenv.config();
 
@@ -12,15 +13,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
-/**
- * Stripe webhook endpoint
- * This must use express.raw middleware to validate signature
- */
 router.post(
   '/',
   express.raw({ type: 'application/json' }),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const sig = req.headers['stripe-signature'];
+    const REPORT_BUCKET = 'custom-requests-reports';
 
     let event: Stripe.Event;
 
@@ -36,24 +34,21 @@ router.post(
       return;
     }
 
-    console.log(' Stripe webhook received event:', event.type);
-    console.log('ENV WEBHOOK SECRET:', process.env.STRIPE_WEBHOOK_SECRET);
+    console.log('✅ Stripe webhook received event:', event.type);
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
-
-      // 1️ Extract propertyRequestId
       const propertyRequestId = session.metadata?.propertyRequestId;
-      console.log(' Payment confirmed for propertyRequestId:', propertyRequestId);
+      console.log('✅ Payment confirmed for propertyRequestId:', propertyRequestId);
 
       if (!propertyRequestId) {
-        console.warn('⚠️ No propertyRequestId found in session metadata. Skipping.');
+        console.warn('⚠️ No propertyRequestId found in session metadata.');
         res.json({ received: true });
         return;
       }
 
       try {
-        // 2️ Fetch record from Supabase
+        // 1️⃣ Fetch the request
         const { data, error: fetchError } = await supabaseAdmin
           .from('custom_property_requests')
           .select('*')
@@ -61,21 +56,21 @@ router.post(
           .single();
 
         if (fetchError) {
-          console.error(' Failed to fetch custom_property_request from Supabase:', fetchError);
+          console.error('❌ Failed to fetch request:', fetchError);
           res.json({ received: true });
           return;
         }
 
-        console.log(' Fetched property request:', data);
+        console.log('✅ Fetched request:', data);
 
-        // 3️ Check if already paid
+        // 2️⃣ Check if already paid
         if (data.payment_status === 'paid') {
-          console.log('⚠️ Already marked as paid. Skipping email.');
+          console.log('⚠️ Already marked as paid. Skipping.');
           res.json({ received: true });
           return;
         }
 
-        // 4️ Update payment_status to 'paid'
+        // 3️⃣ Update payment_status
         const { error: updateError } = await supabaseAdmin
           .from('custom_property_requests')
           .update({
@@ -85,24 +80,70 @@ router.post(
           .eq('id', propertyRequestId);
 
         if (updateError) {
-          console.error(' Failed to update payment_status in Supabase:', updateError);
+          console.error('❌ Failed to update payment_status:', updateError);
         } else {
-          console.log(' Updated payment_status to paid.');
+          console.log('✅ Updated payment_status to paid.');
         }
 
-        // 5️ Send confirmation email
+        // 4️⃣ Send confirmation email (includes attachment generation)
         try {
           await sendConfirmationEmail(data.email, data);
-          console.log('Confirmation email sent!');
+          console.log('✅ Confirmation email sent!');
         } catch (emailErr) {
-          console.error(' Failed to send confirmation email:', emailErr);
+          console.error('❌ Failed to send email:', emailErr);
         }
+
+        // 5️⃣ Generate PDF again for storage
+        console.log('✅ Generating PDF for storage...');
+        const pdfBuffer = await generatePdf(data);
+
+        // 6️⃣ Upload to Supabase Storage
+        const pdfFileName = `${propertyRequestId}.pdf`;
+        const { error: uploadError } = await supabaseAdmin.storage
+          .from(REPORT_BUCKET)
+          .upload(pdfFileName, pdfBuffer, {
+            contentType: 'application/pdf',
+            upsert: true,
+          });
+
+        if (uploadError) {
+          console.error('❌ Failed to upload PDF to Storage:', uploadError);
+        } else {
+          console.log('✅ PDF uploaded to Storage.');
+        }
+
+        // 7️⃣ Get public URL
+        const { data: publicUrlData } = supabaseAdmin.storage
+          .from(REPORT_BUCKET)
+          .getPublicUrl(pdfFileName);
+
+        const publicUrl = publicUrlData?.publicUrl;
+        console.log('✅ PDF public URL:', publicUrl);
+
+        // 8️⃣ Save to custom_request_reports table
+        if (publicUrl) {
+          const { error: insertError } = await supabaseAdmin
+            .from('custom_request_reports')
+            .insert([
+              {
+                property_request_id: propertyRequestId,
+                report_url: publicUrl,
+                created_at: new Date().toISOString(),
+              },
+            ]);
+
+          if (insertError) {
+            console.error('❌ Failed to save report record:', insertError);
+          } else {
+            console.log('✅ Saved report record to custom_request_reports table.');
+          }
+        }
+
       } catch (err) {
-        console.error(' Unexpected error in webhook handler:', err);
+        console.error('❌ Unexpected error in webhook handler:', err);
       }
     }
 
-    // Always respond 200 to Stripe
     res.json({ received: true });
   }
 );

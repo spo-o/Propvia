@@ -24,6 +24,8 @@ import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
 import loopnetRoutes from './routes/property/loopnet';
 
 import stripeWebhookRouter from './routes/stripe/webhook';
+import getReportsByUserRoute from './routes/reports/getByUser';
+
 
 
 
@@ -55,6 +57,8 @@ app.use('/api/blogs', updateRoute);
 
 // CustomProperty analysis API
 app.use('/api/property/saveProperty', savePropertyRouter);
+app.use('/api/reports/by-user', getReportsByUserRoute);
+
 
 // Header
 import contactRoute from './routes/contact/contact';
