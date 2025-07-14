@@ -23,11 +23,19 @@ import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
 
 import loopnetRoutes from './routes/property/loopnet';
 
-dotenv.config();
+import stripeWebhookRouter from './routes/stripe/webhook';
 
+
+
+dotenv.config();
 const app = express();
 
 app.use(cors());
+
+// ✅ Stripe webhook needs raw body
+app.use('/api/stripe/webhook', stripeWebhookRouter);
+
+// ✅ All other routes can use JSON body parser
 app.use(express.json());
 
 // Auth
@@ -45,16 +53,12 @@ app.use('/api/blogs', publishRoute);
 app.use('/api/blogs', deleteRoute);
 app.use('/api/blogs', updateRoute);
 
-//CustomProperty analysis API
+// CustomProperty analysis API
 app.use('/api/property/saveProperty', savePropertyRouter);
 
-//Header
-app.use('/api/ai', aiAskRouter);
-
-// backend/src/app.ts
+// Header
 import contactRoute from './routes/contact/contact';
 app.use('/api/contact', contactRoute);
-
 
 // Team routes
 app.use('/api/team/invite', inviteRoute);
@@ -62,11 +66,13 @@ app.use('/api/team/accept', acceptRoute);
 app.use('/api/team/remove', removeRoute);
 app.use('/api/team/updateRole', updateRoleRoute);
 
-//stripe
+// Stripe checkout
 app.use('/api/checkout', stripeCheckoutRoute);
 
-//live geo data
+// live geo data
 app.use('/api/property', loopnetRoutes);
+
+
 
 
 const PORT = process.env.PORT || 5050;

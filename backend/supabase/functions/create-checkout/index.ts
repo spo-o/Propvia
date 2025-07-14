@@ -114,6 +114,7 @@ serve(async (req) => {
         });
       });
     }
+    const { propertyRequestId } = req.body;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -122,6 +123,7 @@ serve(async (req) => {
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
+        
         propertyAddress: propertyData.address,
         sqft: propertyData.sqft,
         yearBuilt: propertyData.yearBuilt,
@@ -129,6 +131,7 @@ serve(async (req) => {
         customerName: `${propertyData.firstName} ${propertyData.lastName}`,
         customerEmail: propertyData.email,
         customerPhone: propertyData.phone,
+        customPropertyRequestId: propertyRequestId.toString(),
       },
     });
 
