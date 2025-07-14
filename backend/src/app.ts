@@ -24,6 +24,8 @@ import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
 import loopnetRoutes from './routes/property/loopnet';
 
 import stripeWebhookRouter from './routes/stripe/webhook';
+import getStripeSessionDetailsRouter from './routes/stripe/getStripeSessionDetails'
+import checkPaymentStatusRouter from './routes/stripe/checkPaymentStatus';
 
 
 
@@ -68,6 +70,9 @@ app.use('/api/team/updateRole', updateRoleRoute);
 
 // Stripe checkout
 app.use('/api/checkout', stripeCheckoutRoute);
+app.use('/api/stripe', getStripeSessionDetailsRouter);
+app.use('/api', checkPaymentStatusRouter);
+
 
 // live geo data
 app.use('/api/property', loopnetRoutes);

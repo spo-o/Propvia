@@ -31,6 +31,7 @@ import GuidePage from './pages/GuidePage';
 import Contact from './pages/Contact';
 import Careers from './pages/Careers';
 import SuccessPage from './pages/Success';
+import PaymentProcessingScreen from "./pages/PaymentProcessingScreen";
 
 
 
@@ -144,7 +145,8 @@ function AppContent() {
         <Route path="/guides/:id" element={renderWithLayout(<GuidePage />, false)} />
         <Route path="/contact" element={renderWithLayout(<Contact />, false)} />
         <Route path="/careers" element={renderWithLayout(<Careers />, false)} />
-        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/success" element={<PaymentProcessingScreen />} />
+        <Route path="/payment-success/:requestId" element={<SuccessPage />} />
         
         <Route path="/reports" element={
           <ProtectedRoute>
