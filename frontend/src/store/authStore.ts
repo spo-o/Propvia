@@ -10,8 +10,8 @@ export interface User {
   company?: string;
   phone?: string;
   role?: string;
-  // any other fields from your backend payload
 }
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -20,7 +20,6 @@ interface AuthState {
   setAuth: (user: User, token: string) => void;
   logout: () => void;
 }
-
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -50,8 +49,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      // only persist user & token; isAuthenticated/isAdmin derive from them
       partialize: (state) => ({ user: state.user, token: state.token }),
+      // 👇 hydrate *derived booleans* when loading from storage
+      onRehydrateStorage: () => (state, error) => {
+        if (state?.user) {
+          state.isAuthenticated = true;
+          state.isAdmin = state.user.email === ADMIN_EMAIL;
+        }
+      },
     }
   )
 );
