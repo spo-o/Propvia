@@ -377,7 +377,7 @@ export default function PropertyExplorer({
               </div>
             </div>
             <div className="h-[calc(100%-88px)] overflow-auto">
-              <div className="max-w-7xl mx-auto">
+              <div className="w-screen mx-auto">
                 <PropertyList
                   properties={filteredProperties}
                   selectedProperty={selectedProperty}
