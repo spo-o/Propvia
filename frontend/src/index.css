@@ -7,39 +7,112 @@
   --accent-gold: #F6C447;
   --accent-gold-light: #FFD54F;
   --accent-gold-dark: #D4A129;
+  
+  /* Enhanced colors */
+  --brand-teal-50: #f0f9ff;
+  --brand-teal-100: #e0f2fe;
+  --brand-teal-900: #001a1a;
+  
+  /* Glass morphism variables */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* Brand-specific styles */
-.text-brand {
-  color: var(--brand-teal);
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-gray-50 via-white to-brand-50/30 text-gray-900 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
-.bg-brand {
-  background-color: var(--brand-teal);
-}
+@layer components {
+  /* Enhanced Brand-specific styles */
+  .text-brand {
+    color: var(--brand-teal);
+  }
 
-.btn-brand {
-  @apply text-white font-medium px-4 py-2 rounded-lg transition-colors;
-  background-color: var(--brand-teal);
-}
-.btn-brand:hover {
-  background-color: #002b2a;
-}
+  .bg-brand {
+    background-color: var(--brand-teal);
+  }
 
-.btn-accent {
-  @apply text-brand font-medium px-4 py-2 rounded-lg transition-colors;
-  background-color: var(--accent-gold);
-}
-.btn-accent:hover {
-  background-color: var(--accent-gold-dark);
-}
+  /* Enhanced Button Styles */
+  .btn-brand {
+    @apply text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg;
+    background: linear-gradient(135deg, var(--brand-teal) 0%, #002b2a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .btn-brand:hover {
+    @apply shadow-xl transform -translate-y-0.5;
+    background: linear-gradient(135deg, #002b2a 0%, #001a1a 100%);
+  }
 
-.btn-cta {
-  @apply text-brand font-medium px-4 py-2 rounded-lg transition-colors;
-  background-color: var(--accent-gold-light);
-}
-.btn-cta:hover {
-  background-color: var(--accent-gold);
+  .btn-accent {
+    @apply text-brand font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg;
+    background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-light) 100%);
+  }
+  .btn-accent:hover {
+    @apply transform -translate-y-0.5;
+    background: linear-gradient(135deg, var(--accent-gold-dark) 0%, var(--accent-gold) 100%);
+  }
+
+  .btn-cta {
+    @apply text-brand font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl;
+    background: linear-gradient(135deg, var(--accent-gold-light) 0%, var(--accent-gold) 100%);
+    border: 1px solid var(--accent-gold);
+  }
+  .btn-cta:hover {
+    @apply transform -translate-y-1;
+    background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+  }
+
+  /* Glass morphism utilities */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl p-6;
+  }
+  
+  /* Enhanced card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-200/50 p-6 transition-all duration-200 hover:shadow-md hover:border-gray-300/50;
+  }
+  
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-200/50 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-1;
+  }
+  
+  /* Input styles */
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all duration-200 bg-white/80 backdrop-blur-sm;
+  }
+  
+  .input-field:focus {
+    @apply shadow-sm;
+  }
+  
+  /* Dialog and Modal enhancements */
+  .dialog-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+  }
+  
+  .dialog-content {
+    @apply bg-white rounded-2xl shadow-2xl border border-gray-200/50 max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+  }
 }
 
 /* Map styles */

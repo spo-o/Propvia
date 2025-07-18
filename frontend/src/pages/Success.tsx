@@ -1,37 +1,38 @@
-import { useEffect } from 'react';
+import { CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Check } from 'lucide-react';
-import { useToastStore } from '../store/toastStore';
 
-export default function Success() {
+
+export default function SuccessPage() {
   const navigate = useNavigate();
-  const showToast = useToastStore(state => state.showToast);
-
-  useEffect(() => {
-    showToast('Payment successful! Your analysis will begin shortly.', 'success');
-    const timer = setTimeout(() => {
-      navigate('/platform');
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [navigate, showToast]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full mx-4 text-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check className="w-8 h-8 text-green-500" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Payment Successful!
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Thank you for your purchase. Our team will begin analyzing your property right away.
-            You'll receive an email confirmation shortly.
-          </p>
-          <p className="text-sm text-gray-500">
-            Redirecting you back to the platform...
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-8">
+      <div className="max-w-xl text-center space-y-6 border border-gray-200 p-8 rounded-2xl shadow-md">
+        <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+        <h1 className="text-3xl font-bold text-gray-800">Thank You for Your Order!</h1>
+        <p className="text-gray-600">
+          Your payment was successful and we've received your custom report request.
+          <br />
+          We’ll review your submission and email your personalized report shortly.
+        </p>
+        <div className="space-y-4">
+        <a
+          href="https://calendly.com/hello-propvia/30min"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-3 rounded-md">
+            Book Your Consultation
+          </button>
+        </a>
+
+        <button
+          className="w-full border border-gray-300 text-gray-700 py-3 rounded-md mt-2"
+          onClick={() => navigate('/')}
+        >
+          Return to Home
+        </button>
+
         </div>
       </div>
     </div>

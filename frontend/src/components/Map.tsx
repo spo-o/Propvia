@@ -3,9 +3,15 @@ import { Property } from '../types';
 import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
 import L from 'leaflet';
+import { getValidProperties, getBounds, getMarkerIcon } from '../utils/mapHelpers';
+// import { fetchAllProperties } from '../api/map';
+
+
+
+
 
 interface MapProps {
-  properties: Property[];
+  properties: Property[]; // Backend Logic Found: Property data fetched from backend
   selectedProperty: Property | null;
   onPropertySelect: (property: Property) => void;
 }
@@ -13,7 +19,7 @@ interface MapProps {
 export default function Map({ properties, selectedProperty, onPropertySelect }: MapProps) {
   useEffect(() => {
     // Fix Leaflet icon issue
-    delete L.Icon.Default.prototype._getIconUrl;
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -21,22 +27,9 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
     });
   }, []);
 
-  const getMarkerIcon = (property: Property) => {
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `<div class="w-6 h-6 rounded-full ${
-        property.zoning === 'Commercial' ? 'bg-red-500' : 'bg-purple-500'
-      } border-2 border-white shadow-lg ${
-        selectedProperty?.id === property.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-      }"></div>`,
-    });
-  };
-
   // Calculate bounds for all properties
-  const validProperties = properties.filter(p => typeof p.latitude === 'number' && typeof p.longitude === 'number');
-  const bounds = validProperties.length > 0 
-    ? L.latLngBounds(validProperties.map(p => [p.latitude, p.longitude]))
-    : L.latLngBounds([[42.331429, -83.045753], [42.331429, -83.045753]]); // Detroit center as fallback
+  const validProperties = getValidProperties(properties);
+  const bounds = getBounds(properties);
 
   return (
     <div className="relative h-full">
@@ -61,6 +54,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        // Backend Logic Found: Rendering map markers using backend property data
         {properties.map((property) => {
           if (typeof property.latitude !== 'number' || typeof property.longitude !== 'number') {
             return null;
@@ -70,7 +64,7 @@ export default function Map({ properties, selectedProperty, onPropertySelect }: 
             <Marker
               key={property.id}
               position={[property.latitude, property.longitude]}
-              icon={getMarkerIcon(property)}
+              icon={getMarkerIcon(property, selectedProperty)}
               eventHandlers={{
                 click: () => onPropertySelect(property),
               }}
