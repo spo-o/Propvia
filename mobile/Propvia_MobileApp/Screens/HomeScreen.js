@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import { View, Text, Button, StyleSheet } from 'react-native';
-
-export default function HomeScreen({ navigation }) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.subtitle}>Welcome to Propvia Mobile App</Text>
-      <Text style={styles.subtitle}>
-        This is the home screen of the Propvia Mobile App!
-      </Text>
-    </View>
-=======
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useTheme } from '../ThemeContext';
@@ -117,24 +105,10 @@ export default function HomeScreen({ navigation }) {
         </View>
       </View>
     </ScrollView>
->>>>>>> Mobile-Team-Workspace
   );
 }
 
 const styles = StyleSheet.create({
-<<<<<<< HEAD
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#004040',
-    padding: 16,
-    textAlign: 'center',
-  },
-=======
   heroSection: {
     height: 500,
     position: 'relative',
@@ -292,5 +266,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
   },
->>>>>>> Mobile-Team-Workspace
 });

@@ -8,13 +8,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PropviaLogo from './assets/PropviaLogo';
-<<<<<<< HEAD
-
-import HomeScreen from './Screens/HomeScreen';
-import AboutScreen from './Screens/AboutScreen';
-import PaymentPlansScreen from './Screens/PaymentPlansScreen';
-import ProfileScreen from './Screens/ProfileScreen';
-=======
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { TextInput } from 'react-native';
 
@@ -25,7 +18,6 @@ import ResourcesScreen from './Screens/ResourcesScreen';
 import PropertyExplorerScreen from './Screens/PropertyExplorerScreen';
 import SettingsScreen from './Screens/SettingsScreen';
 import MarketIntelScreen from './Screens/MarketIntelScreen';
->>>>>>> Mobile-Team-Workspace
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -62,14 +54,7 @@ const CustomHeader = ({ route }) => {
       <Text style={styles.logoText}>Propvia</Text>
     </TouchableOpacity>
   )}
-<<<<<<< HEAD
-</View>
-
-
-
-=======
       </View>
->>>>>>> Mobile-Team-Workspace
         <TouchableOpacity
           onPress={() => navigation.navigate('Profile')}
           style={styles.profileButton}
@@ -100,22 +85,13 @@ function MainStack() {
         }}
       />
       <Stack.Screen
-<<<<<<< HEAD
-        name="Payment Plans"
-        component={PaymentPlansScreen}
-=======
         name="Profile"
         component={ProfileScreen}
->>>>>>> Mobile-Team-Workspace
         options={{
           header: ({ route }) => <CustomHeader route={route} />, 
         }}
       />
       <Stack.Screen
-<<<<<<< HEAD
-        name="Profile"
-        component={ProfileScreen}
-=======
         name="PropertyExplorer"
         component={PropertyExplorerScreen}
         options={{ header: ({ route }) => <CustomHeader route={route} /> }}
@@ -123,13 +99,10 @@ function MainStack() {
       <Stack.Screen
         name="Resources"
         component={ResourcesScreen}
->>>>>>> Mobile-Team-Workspace
         options={{
           header: ({ route }) => <CustomHeader route={route} />, 
         }}
       />
-<<<<<<< HEAD
-=======
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
@@ -142,22 +115,12 @@ function MainStack() {
           header: ({ route }) => <CustomHeader route={route} />,
         }}
       />
->>>>>>> Mobile-Team-Workspace
     </Stack.Navigator>
   );
 }
 
 
 function CustomDrawerContent(props) {
-<<<<<<< HEAD
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItem
-        label="Home"
-        onPress={() => props.navigation.navigate('Home', { screen: 'index' })}
-        icon={({ color, size }) => (
-          <Ionicons name="home-outline" size={size} color={color} />
-=======
   const { colors } = useTheme();
 
   return (
@@ -184,25 +147,10 @@ function CustomDrawerContent(props) {
         onPress={() => props.navigation.navigate('Home', { screen: 'index' })}
         icon={({ size }) => (
           <Ionicons name="home-outline" size={size} color={colors.text} />
->>>>>>> Mobile-Team-Workspace
         )}
       />
       <DrawerItem
         label="About"
-<<<<<<< HEAD
-        onPress={() => props.navigation.navigate('Home', { screen: 'About' })}
-        icon={({ color, size }) => <Ionicons name="information-circle-outline" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Payment Plans"
-        onPress={() => props.navigation.navigate('Home', { screen: 'Payment Plans' })}
-        icon={({ color, size }) => <Ionicons name="card-outline" size={size} color={color} />}
-      />
-      <DrawerItem
-        label="Profile"
-        onPress={() => props.navigation.navigate('Home', { screen: 'Profile' })}
-        icon={({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />}
-=======
         labelStyle={{ color: colors.text }}
         onPress={() => props.navigation.navigate('Home', { screen: 'About' })}
         icon={({ size }) => (
@@ -244,7 +192,6 @@ function CustomDrawerContent(props) {
         labelStyle={{ color: colors.text }}
         onPress={() => props.navigation.navigate('Home', { screen: 'MarketIntel' })}
         icon={({ size }) => <Ionicons name="globe-outline" size={size} color={colors.text} />}
->>>>>>> Mobile-Team-Workspace
       />
     </DrawerContentScrollView>
   );
@@ -252,20 +199,6 @@ function CustomDrawerContent(props) {
 
 export default function App() {
   return (
-<<<<<<< HEAD
-    <NavigationContainer>
-      <Drawer.Navigator
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-          headerShown: false,
-          swipeEnabled: false,
-        }}
-      >
-        <Drawer.Screen name="Home" component={MainStack} />
-      </Drawer.Navigator>
-      <StatusBar style="auto" />
-    </NavigationContainer>
-=======
     <ThemeProvider>
       <NavigationContainer>
         <Drawer.Navigator
@@ -280,7 +213,6 @@ export default function App() {
         <StatusBar style="auto" />
       </NavigationContainer>
     </ThemeProvider>
->>>>>>> Mobile-Team-Workspace
   );
 }
 
@@ -339,8 +271,6 @@ const styles = StyleSheet.create({
     right: 16,
     top: 8,
   },
-<<<<<<< HEAD
-=======
     askAIContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -357,6 +287,5 @@ const styles = StyleSheet.create({
     color: '#5b6670',
     flex: 1,
   },
->>>>>>> Mobile-Team-Workspace
 });
 
