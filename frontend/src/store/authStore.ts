@@ -12,7 +12,7 @@ export interface User {
   role?: string;
 }
 
-export interface AuthState {
+interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
@@ -50,18 +50,11 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       partialize: (state) => ({ user: state.user, token: state.token }),
-      onRehydrateStorage: (state) => (storedState) => {
-        if (storedState?.user) {
-          //  Properly set booleans on load
-          state.set({
-            isAuthenticated: true,
-            isAdmin: storedState.user.email === ADMIN_EMAIL,
-          });
-        } else {
-          state.set({
-            isAuthenticated: false,
-            isAdmin: false,
-          });
+      // 👇 hydrate *derived booleans* when loading from storage
+      onRehydrateStorage: () => (state, error) => {
+        if (state?.user) {
+          state.isAuthenticated = true;
+          state.isAdmin = state.user.email === ADMIN_EMAIL;
         }
       },
     }
