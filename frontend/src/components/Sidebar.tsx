@@ -25,11 +25,15 @@ const privateNavigation = [
   { name: 'Custom Requests', icon: Building, path: '/requests' },
   { name: 'Team', icon: Users, path: '/team' },
   { name: 'Settings', icon: Settings, path: '/settings' },
+  { name: 'Usage', icon: FileText, path: '/usage' },
+
 ];
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false); // Default to closed for full width view
   const { isAuthenticated } = useAuthStore();
+  console.log('🪵 Sidebar isAuthenticated:', isAuthenticated);
+
 
   const navigation = isAuthenticated 
     ? [...publicNavigation, ...privateNavigation]

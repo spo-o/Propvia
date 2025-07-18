@@ -27,6 +27,10 @@ import stripeWebhookRouter from './routes/stripe/webhook';
 import getStripeSessionDetailsRouter from './routes/stripe/getStripeSessionDetails'
 import checkPaymentStatusRouter from './routes/stripe/checkPaymentStatus';
 import getReportsByUserRoute from './routes/reports/getByUser';
+import usageIncrementRouter from './routes/usage/increment';
+
+
+import getUsageByUserRoute from './routes/usage/getUsageByUser';
 
 
 
@@ -36,10 +40,10 @@ const app = express();
 
 app.use(cors());
 
-// ✅ Stripe webhook needs raw body
+//  Stripe webhook needs raw body
 app.use('/api/stripe/webhook', stripeWebhookRouter);
 
-// ✅ All other routes can use JSON body parser
+// All other routes can use JSON body parser
 app.use(express.json());
 
 // Auth
@@ -80,6 +84,13 @@ app.use('/api', checkPaymentStatusRouter);
 
 // live geo data
 app.use('/api/property', loopnetRoutes);
+
+//usage reports
+app.use('/api/usage/increment', usageIncrementRouter);
+app.use('/api/usage/by-user', getUsageByUserRoute);
+
+
+
 
 
 
