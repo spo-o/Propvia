@@ -174,7 +174,7 @@ function AppContent() {
         } />
         <Route path="/requests" element={
           <ProtectedRoute>
-            {renderWithLayout(<RequestsList savedScenarios={savedScenarios} />)}
+            {renderWithLayout(<RequestsList/>)}
           </ProtectedRoute>
         } />
         <Route path="/team" element={
