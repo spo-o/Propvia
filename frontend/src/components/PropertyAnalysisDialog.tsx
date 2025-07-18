@@ -25,6 +25,12 @@ export default function PropertyAnalysisDialog({
 
   const analysis = property.analysis[selectedBusiness];
 
+  const tabs = [
+    { id: "recommendations", label: "AI Recommendations", icon: "🎯" },
+    { id: "financials", label: "Financial Forecast", icon: "📊" },
+    { id: "details", label: "Property Details", icon: "🏢" },
+  ];
+
   const handleSave = () => {
     const scenario: SavedScenario = {
       id: Date.now().toString(),
@@ -494,7 +500,7 @@ export default function PropertyAnalysisDialog({
                     </Dialog.Title>
                     <Dialog.Description className="text-gray-600 mt-1 flex items-center space-x-2">
                       <span>{property?.address}</span>
-                      <div className="w-2 h-2 bg-brand rounded-full"></div>
+                      <span className="w-2 h-2 bg-brand rounded-full"></span>
                       <span className="text-sm px-2 py-1 bg-brand/10 text-brand rounded-full font-medium whitespace-nowrap">
                         {property.zoning}
                       </span>
@@ -510,11 +516,7 @@ export default function PropertyAnalysisDialog({
             <div className="p-6">
               {/* Enhanced Tab Navigation */}
               <div className="flex flex-wrap gap-2 mb-8 justify-center border-b-emerald-700 border-b-4 pb-2">
-                {[
-                  { id: 'recommendations', label: 'AI Recommendations', icon: '🎯' },
-                  { id: 'financials', label: 'Financial Forecast', icon: '📊' },
-                  { id: 'details', label: 'Property Details', icon: '🏢' }
-                ].map((tab) => (
+                {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as Tab)}
