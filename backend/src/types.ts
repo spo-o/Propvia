@@ -75,5 +75,6 @@ export type CustomPropertyType = {
     description: string,
     selected_package?: string,
     selectedPackage?: string,
-    created_at?: string | null
+    created_at?: string | null,
+    payment_status: string,
   }
