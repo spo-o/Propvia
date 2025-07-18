@@ -8,11 +8,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PropviaLogo from './assets/PropviaLogo';
+<<<<<<< HEAD
 
 import HomeScreen from './Screens/HomeScreen';
 import AboutScreen from './Screens/AboutScreen';
 import PaymentPlansScreen from './Screens/PaymentPlansScreen';
 import ProfileScreen from './Screens/ProfileScreen';
+=======
+import { ThemeProvider, useTheme } from './ThemeContext';
+import { TextInput } from 'react-native';
+
+import HomeScreen from './Screens/HomeScreen';
+import AboutScreen from './Screens/AboutScreen';
+import ProfileScreen from './Screens/ProfileScreen';
+import ResourcesScreen from './Screens/ResourcesScreen';
+import PropertyExplorerScreen from './Screens/PropertyExplorerScreen';
+import SettingsScreen from './Screens/SettingsScreen';
+import MarketIntelScreen from './Screens/MarketIntelScreen';
+>>>>>>> Mobile-Team-Workspace
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -49,10 +62,14 @@ const CustomHeader = ({ route }) => {
       <Text style={styles.logoText}>Propvia</Text>
     </TouchableOpacity>
   )}
+<<<<<<< HEAD
 </View>
 
 
 
+=======
+      </View>
+>>>>>>> Mobile-Team-Workspace
         <TouchableOpacity
           onPress={() => navigation.navigate('Profile')}
           style={styles.profileButton}
@@ -83,25 +100,56 @@ function MainStack() {
         }}
       />
       <Stack.Screen
+<<<<<<< HEAD
         name="Payment Plans"
         component={PaymentPlansScreen}
+=======
+        name="Profile"
+        component={ProfileScreen}
+>>>>>>> Mobile-Team-Workspace
         options={{
           header: ({ route }) => <CustomHeader route={route} />, 
         }}
       />
       <Stack.Screen
+<<<<<<< HEAD
         name="Profile"
         component={ProfileScreen}
+=======
+        name="PropertyExplorer"
+        component={PropertyExplorerScreen}
+        options={{ header: ({ route }) => <CustomHeader route={route} /> }}
+      />
+      <Stack.Screen
+        name="Resources"
+        component={ResourcesScreen}
+>>>>>>> Mobile-Team-Workspace
         options={{
           header: ({ route }) => <CustomHeader route={route} />, 
         }}
       />
+<<<<<<< HEAD
+=======
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{ header: ({ route }) => <CustomHeader route={route} /> }}
+      />
+      <Stack.Screen
+        name="MarketIntel"
+        component={MarketIntelScreen}
+        options={{
+          header: ({ route }) => <CustomHeader route={route} />,
+        }}
+      />
+>>>>>>> Mobile-Team-Workspace
     </Stack.Navigator>
   );
 }
 
 
 function CustomDrawerContent(props) {
+<<<<<<< HEAD
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItem
@@ -109,10 +157,39 @@ function CustomDrawerContent(props) {
         onPress={() => props.navigation.navigate('Home', { screen: 'index' })}
         icon={({ color, size }) => (
           <Ionicons name="home-outline" size={size} color={color} />
+=======
+  const { colors } = useTheme();
+
+  return (
+    <DrawerContentScrollView
+      {...props}
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={{ flex: 1, paddingTop: 70 }}
+    >
+      {/* Ask AI Box */}
+      <View style={styles.askAIContainer}>
+        <Ionicons name="search-outline" size={18} color="#5b6670" style={{ marginLeft: 10 }} />
+        <TextInput
+          style={styles.askAIInput}
+          placeholder="Ask AI (Coming Soon!)"
+          placeholderTextColor="#5b6670"
+          editable={false}
+        />
+      </View>
+
+      {/* Navigation Items */}
+      <DrawerItem
+        label="Home"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'index' })}
+        icon={({ size }) => (
+          <Ionicons name="home-outline" size={size} color={colors.text} />
+>>>>>>> Mobile-Team-Workspace
         )}
       />
       <DrawerItem
         label="About"
+<<<<<<< HEAD
         onPress={() => props.navigation.navigate('Home', { screen: 'About' })}
         icon={({ color, size }) => <Ionicons name="information-circle-outline" size={size} color={color} />}
       />
@@ -125,6 +202,49 @@ function CustomDrawerContent(props) {
         label="Profile"
         onPress={() => props.navigation.navigate('Home', { screen: 'Profile' })}
         icon={({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />}
+=======
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'About' })}
+        icon={({ size }) => (
+          <Ionicons name="information-circle-outline" size={size} color={colors.text} />
+        )}
+      />
+      <DrawerItem
+        label="Property Explorer"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'PropertyExplorer' })}
+        icon={({ size }) => (
+          <PropviaLogo style={{ width: size, height: size }} variant="drawer" color={colors.text} />
+        )}
+      />
+      <DrawerItem
+        label="Profile"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'Profile' })}
+        icon={({ size }) => (
+          <Ionicons name="person-outline" size={size} color={colors.text} />
+        )}
+      />
+      <DrawerItem
+        label="Resources"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'Resources' })}
+        icon={({ size }) => (
+          <Ionicons name="newspaper-outline" size={size} color={colors.text} />
+        )}
+      />
+      <DrawerItem
+        label="Settings"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'Settings' })}
+        icon={({ size }) => <Ionicons name="settings-outline" size={size} color={colors.text} />}
+      />
+      <DrawerItem
+        label="Market Intel"
+        labelStyle={{ color: colors.text }}
+        onPress={() => props.navigation.navigate('Home', { screen: 'MarketIntel' })}
+        icon={({ size }) => <Ionicons name="globe-outline" size={size} color={colors.text} />}
+>>>>>>> Mobile-Team-Workspace
       />
     </DrawerContentScrollView>
   );
@@ -132,6 +252,7 @@ function CustomDrawerContent(props) {
 
 export default function App() {
   return (
+<<<<<<< HEAD
     <NavigationContainer>
       <Drawer.Navigator
         drawerContent={(props) => <CustomDrawerContent {...props} />}
@@ -144,6 +265,22 @@ export default function App() {
       </Drawer.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
+=======
+    <ThemeProvider>
+      <NavigationContainer>
+        <Drawer.Navigator
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          screenOptions={{
+            headerShown: false,
+            swipeEnabled: false,
+          }}
+        >
+          <Drawer.Screen name="Home" component={MainStack} />
+        </Drawer.Navigator>
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </ThemeProvider>
+>>>>>>> Mobile-Team-Workspace
   );
 }
 
@@ -202,5 +339,24 @@ const styles = StyleSheet.create({
     right: 16,
     top: 8,
   },
+<<<<<<< HEAD
+=======
+    askAIContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#c6cfd1',
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+  askAIInput: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#5b6670',
+    flex: 1,
+  },
+>>>>>>> Mobile-Team-Workspace
 });
 
