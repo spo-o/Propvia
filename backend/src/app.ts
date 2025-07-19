@@ -31,6 +31,13 @@ import usageIncrementRouter from './routes/usage/increment';
 
 
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
+import askRouter from './routes/ai/ask';
+
+import askGptRouter from './routes/ai/ask-gpt';
+
+
+
+
 
 
 
@@ -88,6 +95,13 @@ app.use('/api/property', loopnetRoutes);
 //usage reports
 app.use('/api/usage/increment', usageIncrementRouter);
 app.use('/api/usage/by-user', getUsageByUserRoute);
+
+
+//ASK
+app.use('/api/ai', askRouter);
+
+app.use('/api/ai/ask-gpt', askGptRouter);
+
 
 
 
