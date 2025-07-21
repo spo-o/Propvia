@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Button, Linking, ScrollView, TextInput } from 'react-native';
 import { useTheme } from '../ThemeContext';
@@ -8,17 +7,11 @@ export default function AboutScreen() {
   const [contactOpen, setContactOpen] = useState(false); // New state for Contact Us
   const { colors } = useTheme();
 
-=======
-import { View, Text, StyleSheet, Button, Linking } from 'react-native';
-
-export default function AboutScreen() {
->>>>>>> main
   const handleOpenWebsite = () => {
     Linking.openURL('https://propvia.com/');
   };
 
   return (
-<<<<<<< HEAD
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.header}>
         {/* About Section */}
@@ -129,14 +122,6 @@ export default function AboutScreen() {
         )}
         <Button title="Visit Our Website" onPress={handleOpenWebsite} />
       </ScrollView>
-=======
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>About Propvia</Text>
-        <Text style={styles.description}>This is the About page of the app.</Text>
-        <Button title="Visit Propvia Website" onPress={handleOpenWebsite} />
-      </View>
->>>>>>> main
     </View>
   );
 }
@@ -149,7 +134,6 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-<<<<<<< HEAD
     alignItems: 'flex-start',
   },
   dropdownRow: {
@@ -168,17 +152,11 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   subtitle: {
-=======
-    alignItems: 'center',
-  },
-  title: {
->>>>>>> main
     fontSize: 24,
     color: '#fff',
     fontWeight: 'bold',
     marginBottom: 10,
   },
-<<<<<<< HEAD
   subsubtitle: {
     fontSize: 20,
     color: '#fff',
@@ -230,12 +208,5 @@ const styles = StyleSheet.create({
   sendButtonIcon: {
     fontSize: 16,
     marginLeft: 5,
-=======
-  description: {
-    fontSize: 16,
-    color: '#ccc',
-    textAlign: 'center',
-    marginBottom: 20,
->>>>>>> main
   },
 });
