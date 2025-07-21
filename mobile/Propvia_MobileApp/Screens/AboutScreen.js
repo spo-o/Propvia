@@ -5,10 +5,10 @@ import { useTheme } from '../ThemeContext';
 export default function AboutScreen() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false); // New state for Contact Us
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const handleOpenWebsite = () => {
-    Linking.openURL('https://propvia.com/');
+    Linking.openURL('https://propvia.com/about');
   };
 
   return (
@@ -73,54 +73,123 @@ export default function AboutScreen() {
         {contactOpen && (
           <View>
             <Text style={[styles.description, { color: colors.description }]}>
-              Email: <Text style={{ color: colors.primary || '#F7C948' }}>hello@propvia.com</Text>
+              Email: <Text style={{ color: isDark ? '#F7C948' : '#111' }}> hello@propvia.com </Text>
             </Text>
             <Text style={[styles.description, { color: colors.description }]}>
-              Phone: <Text style={{ color: colors.primary || '#F7C948' }}>+1 (313) 555-0123</Text>
+              Phone: <Text style={{ color: isDark ? '#F7C948' : '#111' }}> +1 (313) 555-0123 </Text>
             </Text>
             <Text style={[styles.description, { color: colors.description }]}>
-              Address: 440 Burroughs Street #114 Detroit, MI 48202
+              Address: <Text style={{ color: isDark ? '#F7C948' : '#111' }}> 440 Burroughs Street #114 Detroit, MI 48202 </Text>
             </Text>
             <Text style={[styles.subtitle, { color: colors.text }]}>Send Us a Message</Text>
 
             {/* Messaging Prompt */}
-            <View style={styles.messageContainer}>
-              <Text style={styles.messageLabel}>Name</Text>
+            <View
+              style={[
+                styles.messageContainer,
+                {
+                  backgroundColor: isDark ? '#22262b' : '#f7f7f7', // dark/light backgrounds
+                  borderColor: isDark ? '#444851' : '#ccc',
+                  borderWidth: 1,
+                }
+              ]}
+            >
+              <Text style={[
+                styles.messageLabel,
+                { color: isDark ? '#fff' : '#222' }
+              ]}>Name</Text>
               <TextInput
-                style={styles.messageInput}
+                style={[
+                  styles.messageInput,
+                  {
+                    backgroundColor: isDark ? '#2c2f33' : '#fff',
+                    color: isDark ? '#fff' : '#222',
+                    borderColor: isDark ? '#444851' : '#ccc',
+                  }
+                ]}
                 placeholder="Your full name"
-                placeholderTextColor="#888"
+                placeholderTextColor={isDark ? '#888' : '#aaa'}
               />
-              <Text style={styles.messageLabel}>Email</Text>
+              <Text style={[
+                styles.messageLabel,
+                { color: isDark ? '#fff' : '#222' }
+              ]}>Email</Text>
               <TextInput
-                style={styles.messageInput}
+                style={[
+                  styles.messageInput,
+                  {
+                    backgroundColor: isDark ? '#2c2f33' : '#fff',
+                    color: isDark ? '#fff' : '#222',
+                    borderColor: isDark ? '#444851' : '#ccc',
+                  }
+                ]}
                 placeholder="your.email@example.com"
-                placeholderTextColor="#888"
+                placeholderTextColor={isDark ? '#888' : '#aaa'}
                 keyboardType="email-address"
               />
-              <Text style={styles.messageLabel}>Subject</Text>
+              <Text style={[
+                styles.messageLabel,
+                { color: isDark ? '#fff' : '#222' }
+              ]}>Subject</Text>
               <TextInput
-                style={styles.messageInput}
+                style={[
+                  styles.messageInput,
+                  {
+                    backgroundColor: isDark ? '#2c2f33' : '#fff',
+                    color: isDark ? '#fff' : '#222',
+                    borderColor: isDark ? '#444851' : '#ccc',
+                  }
+                ]}
                 placeholder="What's this about?"
-                placeholderTextColor="#888"
+                placeholderTextColor={isDark ? '#888' : '#aaa'}
               />
-              <Text style={styles.messageLabel}>Message</Text>
+              <Text style={[
+                styles.messageLabel,
+                { color: isDark ? '#fff' : '#222' }
+              ]}>Message</Text>
               <TextInput
-                style={[styles.messageInput, styles.messageTextarea]}
+                style={[
+                  styles.messageInput,
+                  styles.messageTextarea,
+                  {
+                    backgroundColor: isDark ? '#2c2f33' : '#fff',
+                    color: isDark ? '#fff' : '#222',
+                    borderColor: isDark ? '#444851' : '#ccc',
+                  }
+                ]}
                 placeholder="Tell us about your property investment goals..."
-                placeholderTextColor="#888"
+                placeholderTextColor={isDark ? '#888' : '#aaa'}
                 multiline
                 numberOfLines={4}
               />
-              <TouchableOpacity style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  { backgroundColor: isDark ? '#F7C948' : '#004040' }
+                ]}
+              >
+                <Text style={[
+                  styles.sendButtonText,
+                  { color: isDark ? '#222' : '#fff' }
+                ]}>
                   Send Message <Text style={styles.sendButtonIcon}>✈️</Text>
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         )}
-        <Button title="Visit Our Website" onPress={handleOpenWebsite} />
+        <TouchableOpacity
+          style={[styles.websiteButton, { backgroundColor: isDark ? '#F7C948' : '#004040' }]}
+          onPress={handleOpenWebsite}
+          accessibilityRole="button"
+        >
+          <Text style={[
+            styles.websiteButtonText,
+            { color: isDark ? '#222' : '#fff' }
+          ]}>
+            Visit Our Website
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -129,7 +198,7 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
+    //backgroundColor: '#25292e',
     justifyContent: 'center',
   },
   header: {
@@ -171,7 +240,7 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: 10,
-    backgroundColor: '#333842',
+    //backgroundColor: '#333842',
     padding: 15,
     borderRadius: 8,
     width: '100%',
@@ -182,13 +251,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   messageInput: {
-    backgroundColor: '#2c2f33',
-    color: '#fff',
+    //backgroundColor: '#2c2f33',
+    //color: '#fff',
     padding: 10,
     borderRadius: 4,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#444851',
+    //borderColor: '#444851',
   },
   messageTextarea: {
     minHeight: 100,
@@ -208,5 +277,18 @@ const styles = StyleSheet.create({
   sendButtonIcon: {
     fontSize: 16,
     marginLeft: 5,
+  },
+  websiteButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 4,
+    alignItems: 'center',
+    marginTop: 20,
+    alignSelf: 'stretch',
+  },
+  websiteButtonText: {
+    color: '#25292e',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

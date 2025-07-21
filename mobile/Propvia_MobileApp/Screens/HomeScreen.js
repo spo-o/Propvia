@@ -35,19 +35,19 @@ export default function HomeScreen({ navigation }) {
       {/* Impact Stats */}
       <View style={[styles.statsSection, { backgroundColor: colors.background }]}>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>30K+</Text>
+          <Text style={[styles.statNumber, { color: isDark ? '#F7C948' : '#444' }]}>30K+</Text>
           <Text style={[styles.statLabel, { color: isDark ? '#ccc' : '#444' }]}>Vacant Properties</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>85%</Text>
+          <Text style={[styles.statNumber, { color: isDark ? '#F7C948' : '#444' }]}>85%</Text>
           <Text style={[styles.statLabel, { color: isDark ? '#ccc' : '#444' }]}>Analysis Accuracy</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>$2.1B</Text>
+          <Text style={[styles.statNumber, { color: isDark ? '#F7C948' : '#444' }]}>$2.1B</Text>
           <Text style={[styles.statLabel, { color: isDark ? '#ccc' : '#444' }]}>Investment Potential</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>12K+</Text>
+          <Text style={[styles.statNumber, { color: isDark ? '#F7C948' : '#444' }]}>12K+</Text>
           <Text style={[styles.statLabel, { color: isDark ? '#ccc' : '#444' }]}>Jobs Created</Text>
         </View>
       </View>
@@ -76,17 +76,17 @@ export default function HomeScreen({ navigation }) {
         <Text style={[styles.sectionTitle, { color: isDark ? '#fff' : '#111' }]}>How It Works</Text>
         <View style={styles.stepGroup}>
           <View style={styles.stepCard}>
-            <Text style={styles.stepCircle}>1</Text>
+            <Text style={[styles.stepCircle, { backgroundColor: isDark ? '#F7C948' : '#004040', color: isDark ? '#111' : '#fff'  }]}>1</Text>
             <Text style={[styles.cardTitle, { color: isDark ? '#fff' : '#111' }]}>Select Property</Text>
             <Text style={[styles.cardText, { color: colors.description }]}>Choose any vacant property in Detroit or enter an address for instant analysis</Text>
           </View>
           <View style={styles.stepCard}>
-            <Text style={styles.stepCircle}>2</Text>
+            <Text style={[styles.stepCircle, { backgroundColor: isDark ? '#F7C948' : '#004040', color: isDark ? '#111' : '#fff'  }]}>2</Text>
             <Text style={[styles.cardTitle, { color: isDark ? '#fff' : '#111' }]}>AI Analysis</Text>
             <Text style={[styles.cardText, { color: colors.description }]}>Get comprehensive 57-point analysis of property potential and community impact</Text>
           </View>
           <View style={styles.stepCard}>
-            <Text style={styles.stepCircle}>3</Text>
+            <Text style={[styles.stepCircle, { backgroundColor: isDark ? '#F7C948' : '#004040', color: isDark ? '#111' : '#fff' }]}>3</Text>
             <Text style={[styles.cardTitle, { color: isDark ? '#fff' : '#111' }]}>Take Action</Text>
             <Text style={[styles.cardText, { color: colors.description }]}>Receive detailed recommendations, financial projections, and next steps</Text>
           </View>
@@ -100,9 +100,6 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity style={styles.ctaButtonLarge} onPress={() => navigation.navigate('PropertyExplorer')}>
           <Text style={styles.ctaButtonText}>Start Free Analysis</Text>
         </TouchableOpacity>
-        <View style={styles.footerLinks}>
-          <Text style={styles.footerText}>About · Contact · Careers · Blog · FAQ · Terms · LinkedIn · Instagram</Text>
-        </View>
       </View>
     </ScrollView>
   );
@@ -226,9 +223,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     textAlign: 'center',
-    lineHeight: 40,
+    lineHeight: 35,
     borderRadius: 20,
-    marginBottom: 8,
   },
   ctaSection: {
     backgroundColor: '#004040',
