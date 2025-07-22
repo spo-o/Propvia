@@ -92,12 +92,13 @@ export default function Header({
                 <Tooltip.Provider>
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
-                      <button
-                        className="hidden md:flex items-center space-x-2 px-5 py-3 bg-gradient-to-r from-brand-400/30 to-brand-500/30 backdrop-blur-sm text-white/80 font-medium rounded-xl border border-white/20 cursor-not-allowed opacity-80 hover:opacity-90 transition-all duration-300"
+                      <Link
+                        to={"/ask"}
+                        className="hidden md:flex items-center space-x-2 px-5 py-3 bg-gradient-to-r from-brand-400/30 to-brand-500/30 backdrop-blur-sm text-white/80 font-medium rounded-xl border border-white/20 opacity-80 hover:opacity-90 transition-all duration-300"
                       >
                         <Search className="w-5 h-5" />
-                        <span>Ask AI (Coming Soon!)</span>
-                      </button>
+                        <span>Ask AI</span>
+                      </Link>
                     </Tooltip.Trigger>
                     <Tooltip.Portal>
                       <Tooltip.Content
@@ -240,12 +241,20 @@ export default function Header({
             )}
 
             {!isAuthenticated && (
-              <Link
-                to="/platform"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-accent to-accent-light text-brand-900 font-bold rounded-xl hover:from-accent-light hover:to-accent transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              >
-                Explore Properties
-              </Link>
+              <>
+                <Link
+                  to="/platform"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-accent to-accent-light text-brand-900 font-bold rounded-xl hover:from-accent-light hover:to-accent transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  Explore Properties
+                </Link>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-accent to-accent-light text-brand-900 font-bold rounded-xl hover:from-accent-light hover:to-accent transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  Sign In
+                </Link>
+              </>
             )}
           </div>
         </div>

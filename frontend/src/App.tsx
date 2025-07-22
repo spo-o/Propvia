@@ -40,6 +40,8 @@ import Usage from './pages/Usage';
 import { useAuthStore } from './store/authStore';
 import ScrollToTop from './components/ScrollToTop';
 import RequestsList from './pages/RequestsList';
+import AskAiLanding from './pages/askAiPages/AskAiLanding';
+import AskDashboard from './pages/askAiPages/AskDashboard';
 
 const queryClient = new QueryClient();
 
@@ -185,6 +187,16 @@ function AppContent() {
         <Route path="/settings" element={
           <ProtectedRoute>
             {renderWithLayout(<Settings />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask" element={
+          <ProtectedRoute>
+            {renderWithLayout(<AskAiLanding />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask/query" element={
+          <ProtectedRoute>
+            {renderWithLayout(<AskDashboard />)}
           </ProtectedRoute>
         } />
         {/* <Route path="/admin" element={
