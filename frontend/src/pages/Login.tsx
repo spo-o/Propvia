@@ -11,7 +11,9 @@ interface UserProfile {
   phone: string;
   company: string;
   role: string;
+  plan: string; //  added
 }
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -28,9 +30,10 @@ export default function Login() {
     lastName: '',
     phone: '',
     company: '',
-    role: ''
+    role: '',
+    plan: 'free' //  default plan
   });
-
+  
   const navigate = useNavigate();
   const location = useLocation();
   // **Grab the `login` action from your Zustand store**
@@ -74,7 +77,9 @@ export default function Login() {
     try {
       if (isSignUp) {
         // Signup (no auto-login)
-        await backendSignup(email, password, profile);
+        await backendSignup(email, password, profile, profile.plan);
+
+        
         showToast('Account created! Please login to continue.', 'success');
         setIsSignUp(false);
       } else {
@@ -309,6 +314,20 @@ export default function Login() {
                 </div>
               </div>
             )}
+            <label className="block mb-2 text-sm font-medium text-gray-700">Choose your plan</label>
+            <select
+                required
+                name="plan"
+                value={profile.plan}
+                onChange={(e) => setProfile({ ...profile, plan: e.target.value })}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="free">Free</option>
+                <option value="starter">Starter</option>
+                <option value="pro">Pro Builder</option>
+                <option value="visionary">Visionary</option>
+              </select>
+
           </div>
 
           <div>
