@@ -42,6 +42,7 @@ import ScrollToTop from './components/ScrollToTop';
 import RequestsList from './pages/RequestsList';
 import AskAiLanding from './pages/askAiPages/AskAiLanding';
 import AskDashboard from './pages/askAiPages/AskDashboard';
+import QueryLimitReached from './pages/askAiPages/QueryLimitReached';
 
 const queryClient = new QueryClient();
 
@@ -197,6 +198,23 @@ function AppContent() {
         <Route path="/ask/query" element={
           <ProtectedRoute>
             {renderWithLayout(<AskDashboard />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask/limit-reached" element={
+          <ProtectedRoute>
+            {renderWithLayout(<QueryLimitReached 
+              userTier="free"
+              queriesUsed={0}
+              queryLimit={0}
+              resetDate="2025-02-24"
+              onUpgrade={() => {
+                // Navigate to pricing or subscription page
+                window.location.href = '/pricing';
+              }}
+              onBackToDashboard={() => {
+                window.location.href = '/ask';
+              }}
+            />)}
           </ProtectedRoute>
         } />
         {/* <Route path="/admin" element={
