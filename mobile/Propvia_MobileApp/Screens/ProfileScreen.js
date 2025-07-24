@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
@@ -15,7 +16,7 @@ export default function ProfileScreen() {
   const { isDark, colors, toggleTheme } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScrollView style={{ backgroundColor: colors.background }} contentContainerStyle={styles.container}>
       <View style={styles.headerRow}>
         <Text style={[styles.title, { color: colors.text }]}>Welcome back, User</Text>
         <TouchableOpacity
@@ -25,7 +26,9 @@ export default function ProfileScreen() {
           <Feather name="settings" size={22} color={colors.text} />
         </TouchableOpacity>
       </View>
-      <Text style={[styles.subtitle, { color: colors.description }]}>Here's what's happening with your properties</Text>
+      <Text style={[styles.subtitle, { color: colors.description }]}>
+        Here's what's happening with your properties
+      </Text>
 
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
@@ -57,7 +60,9 @@ export default function ProfileScreen() {
           <Feather name="file-text" size={36} color={isDark ? '#F7C948' : '#004040'} />
         </View>
         <Text style={[styles.analysisTitle, { color: colors.text }]}>No Analysis Yet</Text>
-        <Text style={[styles.analysisNote, { color: colors.description }]}>Start by analyzing properties to track your portfolio and generate insights.</Text>
+        <Text style={[styles.analysisNote, { color: colors.description }]}>
+          Start by analyzing properties to track your portfolio and generate insights.
+        </Text>
         <Pressable
           onPress={() => navigation.navigate('PropertyExplorer')}
           style={({ pressed }) => [
@@ -70,26 +75,27 @@ export default function ProfileScreen() {
           ]}
         >
           <Text style={[styles.actionText, { color: isDark ? '#000' : '#fff' }]}>
-  Analyze Your First Property
-</Text>
+            Analyze Your First Property
+          </Text>
         </Pressable>
       </View>
 
       <Pressable
         onPress={toggleTheme}
-        style={[styles.themeToggle, { borderColor: colors.border }]}>
+        style={[styles.themeToggle, { borderColor: colors.border }]}
+      >
         <Text style={[styles.themeToggleText, { color: colors.text }]}>
           Switch to {isDark ? 'Light' : 'Dark'} Mode
         </Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
+    paddingBottom: 40,
   },
   headerRow: {
     flexDirection: 'row',
@@ -115,19 +121,19 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   statCard: {
-  flex: 1,
-  marginHorizontal: 4,
-  backgroundColor: 'transparent',
-  alignItems: 'center',
-  minHeight: 90,
-},
+    flex: 1,
+    marginHorizontal: 4,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    minHeight: 90,
+  },
   statTitle: {
-  fontSize: 13, 
-  fontWeight: '500',
-  marginBottom: 4,
-  textAlign: 'center',
-  maxWidth: 90, 
-},
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 4,
+    textAlign: 'center',
+    maxWidth: 90,
+  },
   statValue: {
     fontSize: 28,
     fontWeight: '700',
@@ -172,7 +178,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   actionText: {
-    color: 'white',
     fontWeight: '600',
     fontSize: 14,
   },
