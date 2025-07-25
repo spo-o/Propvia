@@ -76,6 +76,23 @@ export async function login(
   return res.json();
 }
 
+export async function sendPasswordReset(
+  email: string,
+): Promise<AuthResponse> {
+  const res = await fetch('/api/auth/passwordReset', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email}),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || 'Email not found');
+  }
+
+  return res.json();
+}
+
 export const getAdminRole = async (token: string) => {
   const res = await fetch('/api/user/role', {
     headers: {
