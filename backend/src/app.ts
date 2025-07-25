@@ -24,13 +24,24 @@ import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
 import loopnetRoutes from './routes/property/loopnet';
 
 import stripeWebhookRouter from './routes/stripe/webhook';
+import webhook from './routes/stripe/webhook';
 import getStripeSessionDetailsRouter from './routes/stripe/getStripeSessionDetails'
 import checkPaymentStatusRouter from './routes/stripe/checkPaymentStatus';
 import getReportsByUserRoute from './routes/reports/getByUser';
 import usageIncrementRouter from './routes/usage/increment';
 
+import createSubscriptionSession from './routes/stripe/createUserSubscription';
+
+
 
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
+import askRouter from './routes/ai/ask';
+
+import askGptRouter from './routes/ai/ask-gpt';
+
+
+
+
 
 
 
@@ -76,11 +87,14 @@ app.use('/api/team/accept', acceptRoute);
 app.use('/api/team/remove', removeRoute);
 app.use('/api/team/updateRole', updateRoleRoute);
 
-// Stripe checkout
+// Stripe checkout for custom property analysis
 app.use('/api/checkout', stripeCheckoutRoute);
 app.use('/api/stripe', getStripeSessionDetailsRouter);
 app.use('/api', checkPaymentStatusRouter);
 
+//Stripe for user subscription
+app.use('/api/stripe/create-subscription-session', createSubscriptionSession);
+app.use('/api/stripe/webhook', webhook);
 
 // live geo data
 app.use('/api/property', loopnetRoutes);
@@ -88,6 +102,13 @@ app.use('/api/property', loopnetRoutes);
 //usage reports
 app.use('/api/usage/increment', usageIncrementRouter);
 app.use('/api/usage/by-user', getUsageByUserRoute);
+
+
+//ASK
+app.use('/api/ai', askRouter);
+
+app.use('/api/ai/ask-gpt', askGptRouter);
+
 
 
 

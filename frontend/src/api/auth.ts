@@ -28,7 +28,8 @@ export interface AuthResponse {
 export async function signup(
   email: string,
   password: string,
-  profile: Record<string, any>
+  profile: Record<string, any>,
+  plan: string
 ): Promise<UserResponse> {
   const payload = {
     email,
@@ -40,6 +41,7 @@ export async function signup(
       company: profile.company,
       role: profile.role,
     },
+    plan, // include plan in the root of the payload
   };
 
   const res = await fetch('/api/auth/signup', {
@@ -55,8 +57,18 @@ export async function signup(
     throw new Error(err.error || 'Signup failed');
   }
 
-  return res.json();
+  const responseData = await res.json();
+
+  // Redirect to Stripe if paid plan
+  if (responseData.url) {
+    window.location.href = responseData.url;
+    return new Promise(() => {}); // Stop execution after redirect
+  }
+
+  return responseData;
 }
+
+
 
 export async function login(
   email: string,

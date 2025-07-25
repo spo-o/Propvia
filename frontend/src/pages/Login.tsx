@@ -11,7 +11,9 @@ interface UserProfile {
   phone: string;
   company: string;
   role: string;
+  plan: string; //  added
 }
+
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -24,13 +26,14 @@ export default function Login() {
   const [doPasswordsMatch, setDoPasswordsMatch] = useState(false);
 
   const [profile, setProfile] = useState<UserProfile>({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    company: "",
-    role: "",
+    firstName: '',
+    lastName: '',
+    phone: '',
+    company: '',
+    role: '',
+    plan: 'free' //  default plan
   });
-
+  
   const navigate = useNavigate();
   const location = useLocation();
   const setAuth = useAuthStore(s => s.setAuth);
@@ -64,8 +67,11 @@ export default function Login() {
     setLoading(true);
     try {
       if (isSignUp) {
-        await backendSignup(email, password, profile);
-        showToast("Account created! Please login.", "success");
+        // Signup (no auto-login)
+        await backendSignup(email, password, profile, profile.plan);
+
+        
+        showToast('Account created! Please login to continue.', 'success');
         setIsSignUp(false);
       } else {
         const resp = await backendLogin(email, password);
@@ -242,10 +248,24 @@ export default function Login() {
                   ) : (
                     <X className="text-red-500 h-5 w-5" />
                   )}
-                </span>
-              )}
-            </div>
-          )}
+                </div>
+              </div>
+            )}
+            <label className="block mb-2 text-sm font-medium text-gray-700">Choose your plan</label>
+            <select
+                required
+                name="plan"
+                value={profile.plan}
+                onChange={(e) => setProfile({ ...profile, plan: e.target.value })}
+                className="block w-full p-2 border border-gray-300 rounded-md"
+              >
+                <option value="free">Free</option>
+                <option value="starter">Starter</option>
+                <option value="pro">Pro Builder</option>
+                <option value="visionary">Visionary</option>
+              </select>
+
+          </div>
 
           <button
             type="submit"
