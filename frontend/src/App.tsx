@@ -40,6 +40,10 @@ import Usage from './pages/Usage';
 import { useAuthStore } from './store/authStore';
 import ScrollToTop from './components/ScrollToTop';
 import RequestsList from './pages/RequestsList';
+import AskAiLanding from './pages/askAiPages/AskAiLanding';
+import AskDashboard from './pages/askAiPages/AskDashboard';
+import QueryLimitReached from './pages/askAiPages/QueryLimitReached';
+import ForgotPassword from './pages/ForgotPassword';
 
 const queryClient = new QueryClient();
 
@@ -147,9 +151,25 @@ function AppContent() {
         <Route path="/guides/:id" element={renderWithLayout(<GuidePage />, false)} />
         <Route path="/contact" element={renderWithLayout(<Contact />, false)} />
         <Route path="/careers" element={renderWithLayout(<Careers />, false)} />
-        <Route path="/success" element={<PaymentProcessingScreen />} />
-        <Route path="/payment-success/:requestId" element={<SuccessPage />} />
+        <Route path='/forgotPassword' element={isAuthenticated ? <Navigate to="/platform" replace />: renderWithLayout(<ForgotPassword/>, false)} />
+
         
+        <Route
+          path="/success"
+          element={
+            <ProtectedRoute>
+              {renderWithLayout(<PaymentProcessingScreen />)}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment-success/:requestId"
+          element={
+            <ProtectedRoute>
+              {renderWithLayout(<SuccessPage />)}
+            </ProtectedRoute>
+          }
+        />
         <Route path="/usage" element={
         <ProtectedRoute>
           {renderWithLayout(<Usage />)}
@@ -185,6 +205,33 @@ function AppContent() {
         <Route path="/settings" element={
           <ProtectedRoute>
             {renderWithLayout(<Settings />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask" element={
+          <ProtectedRoute>
+            {renderWithLayout(<AskAiLanding />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask/query" element={
+          <ProtectedRoute>
+            {renderWithLayout(<AskDashboard />)}
+          </ProtectedRoute>
+        } />
+        <Route path="/ask/limit-reached" element={
+          <ProtectedRoute>
+            {renderWithLayout(<QueryLimitReached 
+              userTier="free"
+              queriesUsed={0}
+              queryLimit={0}
+              resetDate="2025-02-24"
+              onUpgrade={() => {
+                // Navigate to pricing or subscription page
+                window.location.href = '/pricing';
+              }}
+              onBackToDashboard={() => {
+                window.location.href = '/ask';
+              }}
+            />)}
           </ProtectedRoute>
         } />
         {/* <Route path="/admin" element={
