@@ -35,9 +35,8 @@ import createSubscriptionSession from './routes/stripe/createUserSubscription';
 
 
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
-import askRouter from './routes/ai/ask';
+import askAiRoute from './routes/ai/ask_ai';
 
-import askGptRouter from './routes/ai/ask-gpt';
 
 
 
@@ -105,14 +104,7 @@ app.use('/api/usage/by-user', getUsageByUserRoute);
 
 
 //ASK
-app.use('/api/ai', askRouter);
-
-app.use('/api/ai/ask-gpt', askGptRouter);
-
-
-
-
-
+app.use('/api/ask_ai', askAiRoute);
 
 
 
