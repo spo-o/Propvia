@@ -1,11 +1,52 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Linking, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Linking, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useTheme } from '../ThemeContext';
 
 export default function AboutScreen() {
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false); // New state for Contact Us
+  const [contactOpen, setContactOpen] = useState(false);
   const { colors, isDark } = useTheme();
+
+  // Add state for form fields and loading
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Function to send message to backend
+  const handleSendMessage = async () => {
+    if (!name || !email || !subject || !message) {
+      Alert.alert('Please fill in all fields.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch('http://YOUR_BACKEND_URL/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message,
+        }),
+      });
+      if (response.ok) {
+        Alert.alert('Message sent!', 'Thank you for contacting us.');
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+      } else {
+        Alert.alert('Error', 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Could not connect to server.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpenWebsite = () => {
     Linking.openURL('https://propvia.com/about');
@@ -109,6 +150,8 @@ export default function AboutScreen() {
                 ]}
                 placeholder="Your full name"
                 placeholderTextColor={isDark ? '#888' : '#aaa'}
+                value={name}
+                onChangeText={setName}
               />
               <Text style={[
                 styles.messageLabel,
@@ -126,6 +169,8 @@ export default function AboutScreen() {
                 placeholder="your.email@example.com"
                 placeholderTextColor={isDark ? '#888' : '#aaa'}
                 keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
               />
               <Text style={[
                 styles.messageLabel,
@@ -142,6 +187,8 @@ export default function AboutScreen() {
                 ]}
                 placeholder="What's this about?"
                 placeholderTextColor={isDark ? '#888' : '#aaa'}
+                value={subject}
+                onChangeText={setSubject}
               />
               <Text style={[
                 styles.messageLabel,
@@ -161,19 +208,27 @@ export default function AboutScreen() {
                 placeholderTextColor={isDark ? '#888' : '#aaa'}
                 multiline
                 numberOfLines={4}
+                value={message}
+                onChangeText={setMessage}
               />
               <TouchableOpacity
                 style={[
                   styles.sendButton,
-                  { backgroundColor: isDark ? '#F7C948' : '#004040' }
+                  { backgroundColor: isDark ? '#F7C948' : '#004040', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }
                 ]}
+                onPress={handleSendMessage}
+                disabled={loading}
               >
-                <Text style={[
-                  styles.sendButtonText,
-                  { color: isDark ? '#222' : '#fff' }
-                ]}>
-                  Send Message <Text style={styles.sendButtonIcon}>✈️</Text>
-                </Text>
+                {loading ? (
+                  <ActivityIndicator color={isDark ? '#222' : '#fff'} />
+                ) : (
+                  <Text style={[
+                    styles.sendButtonText,
+                    { color: isDark ? '#222' : '#fff' }
+                  ]}>
+                    Send Message <Text style={styles.sendButtonIcon}>✈️</Text>
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
