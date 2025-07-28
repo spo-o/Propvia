@@ -16,8 +16,27 @@ export default function AboutScreen() {
 
   // Function to send message to backend
   const handleSendMessage = async () => {
-    if (!name || !email || !subject || !message) {
-      Alert.alert('Please fill in all fields.');
+    // Field validation with specific error messages
+    if (!name.trim()) {
+      Alert.alert('Validation Error', 'Please enter your name.');
+      return;
+    }
+    if (!email.trim()) {
+      Alert.alert('Validation Error', 'Please enter your email.');
+      return;
+    }
+    // Simple email format check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+    if (!subject.trim()) {
+      Alert.alert('Validation Error', 'Please enter a subject.');
+      return;
+    }
+    if (!message.trim()) {
+      Alert.alert('Validation Error', 'Please enter your message.');
       return;
     }
     setLoading(true);
@@ -39,10 +58,22 @@ export default function AboutScreen() {
         setSubject('');
         setMessage('');
       } else {
-        Alert.alert('Error', 'Failed to send message. Please try again.');
+        let errorText = '';
+        try {
+          errorText = await response.text();
+        } catch (e) {
+          errorText = 'Unable to read error details.';
+        }
+        Alert.alert(
+          'Error',
+          `Failed to send message. Status: ${response.status} ${response.statusText}\nDetails: ${errorText}`
+        );
       }
     } catch (error) {
-      Alert.alert('Error', 'Could not connect to server.');
+      Alert.alert(
+        'Network Error',
+        `Could not connect to server.\n${error && error.message ? error.message : JSON.stringify(error)}`
+      );
     } finally {
       setLoading(false);
     }
