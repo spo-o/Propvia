@@ -22,6 +22,7 @@ export default function PropertyAnalysisDialog({
   const showToast = useToastStore(state => state.showToast);
 
   if (!property) return null;
+  if(!property.analysis) return null
 
   const analysis = property.analysis[selectedBusiness];
 

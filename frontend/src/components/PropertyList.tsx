@@ -30,27 +30,28 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
   const [showFilters, setShowFilters] = useState(false);
   const [selectedPropertyForShare, setSelectedPropertyForShare] = useState<Property | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState({
-    minPrice: 0,
-    maxPrice: 1000000,
-    propertyType: 'all',
-    minSquareFeet: 0,
-  });
 
-  const filteredProperties = useMemo(() => {
-    return properties.filter(property => {
-      const matchesSearch = property.address.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilters = 
-        property.renovationCost >= filters.minPrice &&
-        property.renovationCost <= filters.maxPrice &&
-        property.sqft >= filters.minSquareFeet &&
-        (filters.propertyType === 'all' || property.zoning.toLowerCase() === filters.propertyType);
-      return matchesSearch && matchesFilters;
-    });
-  }, [properties, searchTerm, filters]);
+  // const [filters, setFilters] = useState({
+  //   minPrice: 0,
+  //   maxPrice: 1000000,
+  //   propertyType: 'all',
+  //   minSquareFeet: 0,
+  // });
 
-  const totalPages = Math.ceil(filteredProperties.length / ITEMS_PER_PAGE);
-  const paginatedProperties = filteredProperties.slice(
+  // const filteredProperties = useMemo(() => {
+  //   return properties.filter(property => {
+  //     const matchesSearch = property.address.toLowerCase().includes(searchTerm.toLowerCase());
+  //     const matchesFilters = 
+  //       property.renovationCost >= filters.minPrice &&
+  //       property.renovationCost <= filters.maxPrice &&
+  //       property.sqft >= filters.minSquareFeet &&
+  //       (filters.propertyType === 'all' || property.zoning.toLowerCase() === filters.propertyType);
+  //     return matchesSearch && matchesFilters;
+  //   });
+  // }, [properties, searchTerm, filters]);
+
+  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+  const paginatedProperties = properties.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -87,22 +88,7 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
     }
     onPropertySelect(property);
   };
-
-  const getFilterTitle = (filter: string) => {
-    switch (filter) {
-      case "minPrice":
-        return "Min Price"
-      case "maxPrice":
-        return "Max Price"
-      case "propertyType":
-        return "Type"
-      case "minSquareFeet":
-        return "Min SQFT"
-      default:
-        break;
-    }
-  }
-
+  console.log(properties[0])
   return (
     <div className="h-full flex flex-col bg-gray-50/30">
       {/* Modern Property Cards Section */}
@@ -131,23 +117,8 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">No Properties Found</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  {searchTerm ? 
-                    `No matches for "${searchTerm}". Try different keywords.` :
-                    'No properties available with the current filters.'
-                  }
                 </p>
               </div>
-              {(searchTerm || Object.values(filters).some(v => v !== 'all' && v !== 0)) && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setFilters({ minPrice: 0, maxPrice: 1000000, propertyType: 'all', minSquareFeet: 0 });
-                  }}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                >
-                  Clear All Filters
-                </button>
-              )}
             </div>
           </div>
         )}
@@ -175,7 +146,7 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
           
           <div className="flex items-center space-x-4">
             <span className="text-sm text-gray-600 font-medium">
-              {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredProperties.length)} of {filteredProperties.length}
+              {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, properties.length)} of {properties.length}
             </span>
             <div className="hidden sm:flex items-center space-x-1">
               {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
