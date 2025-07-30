@@ -18,6 +18,9 @@ import ResourcesScreen from './Screens/ResourcesScreen';
 import PropertyExplorerScreen from './Screens/PropertyExplorerScreen';
 import SettingsScreen from './Screens/SettingsScreen';
 import MarketIntelScreen from './Screens/MarketIntelScreen';
+import BlogScreen from './Screens/BlogScreen';
+import GuidesScreen from './Screens/GuidesScreen';
+import FAQScreen from './Screens/FAQScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -115,6 +118,27 @@ function MainStack() {
           header: ({ route }) => <CustomHeader route={route} />,
         }}
       />
+      <Stack.Screen
+  name="BlogScreen"
+  component={BlogScreen}
+  options={{
+    header: ({ route }) => <CustomHeader route={route} />, 
+  }}
+/>
+<Stack.Screen
+  name="GuidesScreen"
+  component={GuidesScreen}
+  options={{
+    header: ({ route }) => <CustomHeader route={route} />, 
+  }}
+/>
+<Stack.Screen
+  name="FAQScreen"
+  component={FAQScreen}
+  options={{
+    header: ({ route }) => <CustomHeader route={route} />, 
+  }}
+/>
     </Stack.Navigator>
   );
 }

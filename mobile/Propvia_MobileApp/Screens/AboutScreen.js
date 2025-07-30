@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Linking, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useTheme } from '../ThemeContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AboutScreen() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  const { colors, isDark } = useTheme();
+  const [blogOpen, setBlogOpen] = useState(false);
+  const [guidesOpen, setGuidesOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
 
-  // Add state for form fields and loading
+  const { colors, isDark } = useTheme();
+  const navigation = useNavigation();
+
+  // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Function to send message to backend
   const handleSendMessage = async () => {
-    // Field validation with specific error messages
     if (!name.trim()) {
       Alert.alert('Validation Error', 'Please enter your name.');
       return;
@@ -25,7 +29,6 @@ export default function AboutScreen() {
       Alert.alert('Validation Error', 'Please enter your email.');
       return;
     }
-    // Simple email format check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
       Alert.alert('Validation Error', 'Please enter a valid email address.');
@@ -44,12 +47,7 @@ export default function AboutScreen() {
       const response = await fetch('http://192.168.0.235:5050/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          subject,
-          message,
-        }),
+        body: JSON.stringify({ name, email, subject, message }),
       });
       if (response.ok) {
         Alert.alert('Message sent!', 'Thank you for contacting us.');
@@ -64,33 +62,25 @@ export default function AboutScreen() {
         } catch (e) {
           errorText = 'Unable to read error details.';
         }
-        Alert.alert(
-          'Error',
-          `Failed to send message. Status: ${response.status} ${response.statusText}\nDetails: ${errorText}`
-        );
+        Alert.alert('Error', `Failed to send message. Status: ${response.status} ${response.statusText}\nDetails: ${errorText}`);
       }
     } catch (error) {
-      Alert.alert(
-        'Network Error',
-        `Could not connect to server.\n${error && error.message ? error.message : JSON.stringify(error)}`
-      );
+      Alert.alert('Network Error', `Could not connect to server.\n${error && error.message ? error.message : JSON.stringify(error)}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleOpenWebsite = () => {
-    Linking.openURL('https://propvia.com/about');
+    Linking.openURL('https://propvia.com');
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.header}>
+
         {/* About Section */}
-        <TouchableOpacity
-          style={styles.dropdownRow}
-          onPress={() => setAboutOpen(open => !open)}
-        >
+        <TouchableOpacity style={styles.dropdownRow} onPress={() => setAboutOpen(open => !open)}>
           <Text style={[styles.arrow, { color: colors.text }]}>{aboutOpen ? '▼' : '▶'}</Text>
           <Text style={[styles.title, { color: colors.text }]}>About</Text>
         </TouchableOpacity>
@@ -134,11 +124,41 @@ export default function AboutScreen() {
           </View>
         )}
 
+        {/* Blog Section */}
+        <TouchableOpacity style={styles.dropdownRow} onPress={() => setBlogOpen(open => !open)}>
+          <Text style={[styles.arrow, { color: colors.text }]}>{blogOpen ? '▼' : '▶'}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Blog</Text>
+        </TouchableOpacity>
+        {blogOpen && (
+          <TouchableOpacity onPress={() => navigation.navigate('BlogScreen')}>
+            <Text style={styles.linkText}>View Blog →</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Guides Section */}
+        <TouchableOpacity style={styles.dropdownRow} onPress={() => setGuidesOpen(open => !open)}>
+          <Text style={[styles.arrow, { color: colors.text }]}>{guidesOpen ? '▼' : '▶'}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Guides</Text>
+        </TouchableOpacity>
+        {guidesOpen && (
+          <TouchableOpacity onPress={() => navigation.navigate('GuidesScreen')}>
+            <Text style={styles.linkText}>View Guides →</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* FAQ Section */}
+        <TouchableOpacity style={styles.dropdownRow} onPress={() => setFaqOpen(open => !open)}>
+          <Text style={[styles.arrow, { color: colors.text }]}>{faqOpen ? '▼' : '▶'}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>FAQ</Text>
+        </TouchableOpacity>
+        {faqOpen && (
+          <TouchableOpacity onPress={() => navigation.navigate('FAQScreen')}>
+            <Text style={styles.linkText}>View FAQ →</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Contact Us Section */}
-        <TouchableOpacity
-          style={styles.dropdownRow}
-          onPress={() => setContactOpen(open => !open)}
-        >
+        <TouchableOpacity style={styles.dropdownRow} onPress={() => setContactOpen(open => !open)}>
           <Text style={[styles.arrow, { color: colors.text }]}>{contactOpen ? '▼' : '▶'}</Text>
           <Text style={[styles.title, { color: colors.text }]}>Contact Us</Text>
         </TouchableOpacity>
@@ -153,23 +173,19 @@ export default function AboutScreen() {
             <Text style={[styles.description, { color: colors.description }]}>
               Address: <Text style={{ color: isDark ? '#F7C948' : '#111' }}> 440 Burroughs Street #114 Detroit, MI 48202 </Text>
             </Text>
+
             <Text style={[styles.subtitle, { color: colors.text }]}>Send Us a Message</Text>
 
-            {/* Messaging Prompt */}
-            <View
-              style={[
-                styles.messageContainer,
-                {
-                  backgroundColor: isDark ? '#22262b' : '#f7f7f7', // dark/light backgrounds
-                  borderColor: isDark ? '#444851' : '#ccc',
-                  borderWidth: 1,
-                }
-              ]}
-            >
-              <Text style={[
-                styles.messageLabel,
-                { color: isDark ? '#fff' : '#222' }
-              ]}>Name</Text>
+            <View style={[
+              styles.messageContainer,
+              {
+                backgroundColor: isDark ? '#22262b' : '#f7f7f7',
+                borderColor: isDark ? '#444851' : '#ccc',
+                borderWidth: 1,
+              }
+            ]}>
+              {/* Name */}
+              <Text style={[styles.messageLabel, { color: isDark ? '#fff' : '#222' }]}>Name</Text>
               <TextInput
                 style={[
                   styles.messageInput,
@@ -184,10 +200,9 @@ export default function AboutScreen() {
                 value={name}
                 onChangeText={setName}
               />
-              <Text style={[
-                styles.messageLabel,
-                { color: isDark ? '#fff' : '#222' }
-              ]}>Email</Text>
+
+              {/* Email */}
+              <Text style={[styles.messageLabel, { color: isDark ? '#fff' : '#222' }]}>Email</Text>
               <TextInput
                 style={[
                   styles.messageInput,
@@ -203,10 +218,9 @@ export default function AboutScreen() {
                 value={email}
                 onChangeText={setEmail}
               />
-              <Text style={[
-                styles.messageLabel,
-                { color: isDark ? '#fff' : '#222' }
-              ]}>Subject</Text>
+
+              {/* Subject */}
+              <Text style={[styles.messageLabel, { color: isDark ? '#fff' : '#222' }]}>Subject</Text>
               <TextInput
                 style={[
                   styles.messageInput,
@@ -221,10 +235,9 @@ export default function AboutScreen() {
                 value={subject}
                 onChangeText={setSubject}
               />
-              <Text style={[
-                styles.messageLabel,
-                { color: isDark ? '#fff' : '#222' }
-              ]}>Message</Text>
+
+              {/* Message */}
+              <Text style={[styles.messageLabel, { color: isDark ? '#fff' : '#222' }]}>Message</Text>
               <TextInput
                 style={[
                   styles.messageInput,
@@ -242,6 +255,8 @@ export default function AboutScreen() {
                 value={message}
                 onChangeText={setMessage}
               />
+
+              {/* Send button */}
               <TouchableOpacity
                 style={[
                   styles.sendButton,
@@ -264,6 +279,8 @@ export default function AboutScreen() {
             </View>
           </View>
         )}
+
+        {/* Visit Website Button */}
         <TouchableOpacity
           style={[styles.websiteButton, { backgroundColor: isDark ? '#F7C948' : '#004040' }]}
           onPress={handleOpenWebsite}
@@ -284,7 +301,6 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#25292e',
     justifyContent: 'center',
   },
   header: {
@@ -298,52 +314,48 @@ const styles = StyleSheet.create({
   },
   arrow: {
     fontSize: 36,
-    color: '#fff',
     marginRight: 8,
   },
   title: {
     fontSize: 36,
-    color: '#fff',
     fontWeight: '500'
   },
   subtitle: {
     fontSize: 24,
-    color: '#fff',
     fontWeight: 'bold',
     marginBottom: 10,
   },
   subsubtitle: {
     fontSize: 20,
-    color: '#fff',
     fontWeight: '500',
   },
   description: {
     fontSize: 16,
-    color: '#ccc',
     textAlign: 'left',
     marginBottom: 20,
     marginTop: 10,
   },
+  linkText: {
+    color: '#F7C948',   // ✅ Yellow clickable text
+    fontSize: 18,
+    marginTop: 8,
+    textDecorationLine: 'underline'
+  },
   messageContainer: {
     marginTop: 10,
-    //backgroundColor: '#333842',
     padding: 15,
     borderRadius: 8,
     width: '100%',
   },
   messageLabel: {
     fontSize: 16,
-    color: '#fff',
     marginBottom: 5,
   },
   messageInput: {
-    //backgroundColor: '#2c2f33',
-    //color: '#fff',
     padding: 10,
     borderRadius: 4,
     marginBottom: 15,
     borderWidth: 1,
-    //borderColor: '#444851',
   },
   messageTextarea: {
     minHeight: 100,
@@ -356,7 +368,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sendButtonText: {
-    color: '#25292e',
     fontWeight: 'bold',
     fontSize: 16,
   },
@@ -373,7 +384,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   websiteButtonText: {
-    color: '#25292e',
     fontWeight: 'bold',
     fontSize: 16,
   },
