@@ -71,7 +71,7 @@ export default function PropertyExplorer({
 
   const filteredProperties = useMemo(() => {
     if(isLoading) return []
-    let newProperties = [...allProperties];
+    let newProperties = [...properties];
     //check matches for the search term
     if (searchTerm) {
       newProperties = newProperties.filter(p =>
