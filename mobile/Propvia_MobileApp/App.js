@@ -81,12 +81,12 @@ function MainStack() {
         }}
       />
       <Stack.Screen
-        name="About"
-        component={AboutScreen}
-        options={{
-          header: ({ route }) => <CustomHeader route={route} />, 
-        }}
-      />
+  name="Information"
+  component={AboutScreen}
+  options={{
+    header: ({ route }) => <CustomHeader route={route} />,
+  }}
+/>
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
@@ -174,13 +174,13 @@ function CustomDrawerContent(props) {
         )}
       />
       <DrawerItem
-        label="About"
-        labelStyle={{ color: colors.text }}
-        onPress={() => props.navigation.navigate('Home', { screen: 'About' })}
-        icon={({ size }) => (
-          <Ionicons name="information-circle-outline" size={size} color={colors.text} />
-        )}
-      />
+  label="Information"
+  labelStyle={{ color: colors.text }}
+  onPress={() => props.navigation.navigate('Home', { screen: 'Information' })}
+  icon={({ size }) => (
+    <Ionicons name="information-circle-outline" size={size} color={colors.text} />
+  )}
+/>
       <DrawerItem
         label="Property Explorer"
         labelStyle={{ color: colors.text }}

@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   linkText: {
-    color: '#F7C948',   // ✅ Yellow clickable text
+    color: '#F7C948',   // Yellow clickable text
     fontSize: 18,
     marginTop: 8,
     textDecorationLine: 'underline'
