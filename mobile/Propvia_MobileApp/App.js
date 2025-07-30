@@ -197,14 +197,7 @@ function CustomDrawerContent(props) {
           <Ionicons name="person-outline" size={size} color={colors.text} />
         )}
       />
-      <DrawerItem
-        label="Resources"
-        labelStyle={{ color: colors.text }}
-        onPress={() => props.navigation.navigate('Home', { screen: 'Resources' })}
-        icon={({ size }) => (
-          <Ionicons name="newspaper-outline" size={size} color={colors.text} />
-        )}
-      />
+      
       <DrawerItem
         label="Settings"
         labelStyle={{ color: colors.text }}
