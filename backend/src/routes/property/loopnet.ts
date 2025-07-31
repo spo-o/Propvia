@@ -244,10 +244,6 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
 
     const { city, zoning, minPrice, maxPrice, sortBy, sortOrder } = req.query;
 
-    console.log(` Fetching from DB with filters:`, {
-      city, zoning, minPrice, maxPrice, sortBy, sortOrder
-    });
-
     let query = supabase
       .from(TABLE_NAME)
       .select('*', { count: 'exact' });
@@ -279,7 +275,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
       return;
     }
 
-    console.log(` Fetched ${data?.length || 0} records from DB.`);
+    
 
     res.json({
       data,

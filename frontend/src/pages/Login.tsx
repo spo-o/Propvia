@@ -11,7 +11,7 @@ interface UserProfile {
   phone: string;
   company: string;
   role: string;
-  plan: string; //  added
+  plan: string;
 }
 
 export default function Login() {
@@ -30,7 +30,7 @@ export default function Login() {
     phone: "",
     company: "",
     role: "",
-    plan: "free", //  default plan
+    plan: "free",
   });
 
   const navigate = useNavigate();
@@ -66,8 +66,16 @@ export default function Login() {
     setLoading(true);
     try {
       if (isSignUp) {
-        // Signup (no auto-login)
-        await backendSignup(email, password, profile, profile.plan);
+        const resp = await backendSignup(email, password, profile, profile.plan);
+
+        // Stripe redirect for paid plans
+        if ('url' in resp) {
+          console.log('[FE] Redirecting to Stripe:', resp.url);
+          window.location.href = resp.url;
+          return;
+        }
+        
+
         showToast("Account created! Please login to continue.", "success");
         setIsSignUp(false);
       } else {
@@ -124,7 +132,6 @@ export default function Login() {
           {isSignUp && (
             <>
               <h3 className="text-gray-700 font-medium">Profile Information</h3>
-              {/* name */}
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
@@ -147,7 +154,6 @@ export default function Login() {
                   className="input p-2 rounded-lg border"
                 />
               </div>
-              {/* number & company */}
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="tel"
@@ -196,9 +202,11 @@ export default function Login() {
                   className="input w-full border rounded-lg p-2"
                 >
                   <option value="free">Free</option>
-                  <option value="starter">Starter</option>
-                  <option value="pro">Pro Builder</option>
-                  <option value="visionary">Visionary</option>
+                  <option value="starter_monthly">Starter (Monthly)</option>
+                  <option value="starter_annual">Starter (Annual)</option>
+                  <option value="pro_monthly">Pro Builder (Monthly)</option>
+                  <option value="pro_annual">Pro Builder (Annual)</option>
+
                 </select>
               </div>
             </>
@@ -323,7 +331,6 @@ export default function Login() {
         </form>
       </div>
 
-      {/* Style override */}
       <style>{`
         .input {
           @apply w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
