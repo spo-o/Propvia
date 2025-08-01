@@ -17,7 +17,7 @@ export const checkUsageLimit = async (
     return { allowed: false, message: 'User not found.' };
   }
 
-  const plan = user.plan;
+  const plan = user.plan as keyof typeof PLAN_LIMITS; // <-- Add this type assertion
   const limits = PLAN_LIMITS[plan];
 
   if (!limits) {
