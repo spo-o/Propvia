@@ -25,7 +25,7 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.secondaryButton, { borderColor: isDark ? '#fff' : '#444' }]}
-            onPress={() => navigation.navigate('About')}
+            onPress={() => navigation.navigate('Information')}
           >
             <Text style={[styles.secondaryButtonText, { color: isDark ? '#fff' : '#444' }]}>Learn More</Text>
           </TouchableOpacity>
