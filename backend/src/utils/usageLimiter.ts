@@ -40,7 +40,7 @@ export const checkUsageLimit = async (
   console.log('Current usage:', currentUsage);
   console.log('Allowed limit:', allowedUsage);
 
-  const isAllowed = currentUsage < allowedUsage;
+  const isAllowed = currentUsage <= allowedUsage;
 
   return {
     allowed: isAllowed,
