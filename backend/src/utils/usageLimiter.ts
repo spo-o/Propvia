@@ -19,8 +19,8 @@ export const checkUsageLimit = async (
     return { allowed: false, message: 'User not found.' };
   }
 
-  const plan = user.plan as keyof typeof PLAN_LIMITS; // <-- Add this type assertion
-  const limits = PLAN_LIMITS[plan];
+  const plan = user.plan as string;
+  console.log(' User plan:', plan);
 
   if (!(plan in PLAN_LIMITS)) {
     console.error(' Unknown subscription plan:', plan);
@@ -40,7 +40,7 @@ export const checkUsageLimit = async (
   console.log('Current usage:', currentUsage);
   console.log('Allowed limit:', allowedUsage);
 
-  const isAllowed = currentUsage <= allowedUsage;
+  const isAllowed = currentUsage < allowedUsage;
 
   return {
     allowed: isAllowed,
