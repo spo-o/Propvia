@@ -23,24 +23,18 @@ export const checkUsageLimit = async (
   console.log(' User plan:', plan);
 
   if (!(plan in PLAN_LIMITS)) {
-    console.error(' Unknown subscription plan:', plan);
+    console.error('⚠️ Unknown subscription plan:', plan);
     return { allowed: false, message: 'Unknown subscription plan.' };
   }
 
   const limits = PLAN_LIMITS[plan as PlanKey];
-  const currentUsage = user[usageType];
-
-  const allowedUsage = {
-    ask_count: limits.askLimit,
-    analysis_count: limits.analysisLimit,
-    scenario_count: limits.scenarioLimit,
-  }[usageType];
+  const currentRemaining = user[usageType]; // Remaining quota
 
   console.log(` Usage check for ${usageType}:`);
-  console.log('Current usage:', currentUsage);
-  console.log('Allowed limit:', allowedUsage);
+  console.log('Current remaining:', currentRemaining);
+  console.log('Allowed limit:', limits[usageType.replace('_count', 'Limit') as keyof typeof limits]);
 
-  const isAllowed = currentUsage <= allowedUsage;
+  const isAllowed = currentRemaining > 0;
 
   return {
     allowed: isAllowed,
