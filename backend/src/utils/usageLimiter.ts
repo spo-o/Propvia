@@ -1,3 +1,4 @@
+
 import { supabase } from '../services/supabaseClient';
 import { PLAN_LIMITS } from './subscriptionLimit';
 
@@ -24,23 +25,14 @@ export const checkUsageLimit = async (
     return { allowed: false, message: 'Unknown subscription plan.' };
   }
 
-const currentUsage = (user[usageType] ?? 0) as number;
+  const currentUsage = user[usageType];
+  const allowedUsage = {
+    ask_count: limits.askLimit,
+    analysis_count: limits.analysisLimit,
+    scenario_count: limits.scenarioLimit,
+  }[usageType];
 
-const allowedUsage = {
-  ask_count: limits.askLimit,
-  analysis_count: limits.analysisLimit,
-  scenario_count: limits.scenarioLimit,
-}[usageType];
-
-const isAllowed = currentUsage > 0; // beacause it should always be greater than 0
-  // const currentUsage = user[usageType];
-  // const allowedUsage = {
-  //   ask_count: limits.askLimit,
-  //   analysis_count: limits.analysisLimit,
-  //   scenario_count: limits.scenarioLimit,
-  // }[usageType];
-
-  // const isAllowed = currentUsage < allowedUsage;
+  const isAllowed = currentUsage > 0;
 
   return {
     allowed: isAllowed,
