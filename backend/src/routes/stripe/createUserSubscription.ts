@@ -44,7 +44,7 @@ router.post(
         .single();
 
       if (error || !user) {
-        console.error('❌ User fetch failed:', error?.message);
+        console.error(' User fetch failed:', error?.message);
         res.status(404).json({ error: 'User not found' });
         return;
       }
@@ -107,7 +107,7 @@ router.post(
         }
       });
       
-      console.error('❌ Error creating Stripe session:', err);
+      console.error(' Error creating Stripe session:', err);
       next(err);
     }
   }
