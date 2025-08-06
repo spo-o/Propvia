@@ -17,8 +17,9 @@ export default function PropertyExplorerScreen() {
     const fetchProperties = async () => {
       try {
         setLoading(true);
-        const res = await fetch('http://192.168.0.235:5050/api/property/live');
+        const res = await fetch('http://192.168.0.235:5050/api/property/live?country=US&state=MI&city=Detroit');
         const data = await res.json();
+        console.log('Fetched properties:', data);
         setProperties(Array.isArray(data) ? data : []); // <-- Defensive assignment
       } catch (err) {
         console.error('Failed to fetch properties:', err);
