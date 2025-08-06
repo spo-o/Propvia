@@ -1,32 +1,48 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useTheme } from '../ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
-// Sample mock data with lat/lng
-const mockProperties = [
-  { id: '1', address: '123 Main St', lat: 40.7128, lng: -74.0060 },
-  { id: '2', address: '456 Elm Ave', lat: 34.0522, lng: -118.2437 },
-  { id: '3', address: '789 Oak Blvd', lat: 41.8781, lng: -87.6298 },
-];
-
 export default function PropertyExplorerScreen() {
   const { colors } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [properties, setProperties] = useState([]); // <-- NEW
+  const [loading, setLoading] = useState(true);     // <-- NEW
   const mapRef = useRef(null);
 
-  const filteredProperties = mockProperties.filter(property =>
-    property.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Fetch properties from backend
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch('http://192.168.0.235:5050/api/property/live');
+        const data = await res.json();
+        setProperties(Array.isArray(data) ? data : []); // <-- Defensive assignment
+      } catch (err) {
+        console.error('Failed to fetch properties:', err);
+        setProperties([]); // <-- Ensure it's always an array
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProperties();
+  }, []);
+
+  // Use fetched properties instead of mock data
+  const filteredProperties = Array.isArray(properties)
+    ? properties.filter(property =>
+        property.address?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   const handleSelectProperty = (property) => {
     setSelectedProperty(property);
-    if (mapRef.current) {
+    if (mapRef.current && property.latitude && property.longitude) {
       mapRef.current.animateToRegion({
-        latitude: property.lat,
-        longitude: property.lng,
+        latitude: property.latitude,
+        longitude: property.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       }, 1000);
@@ -65,14 +81,23 @@ export default function PropertyExplorerScreen() {
         }}
       >
         {filteredProperties.map((property) => (
-          <Marker
-            key={property.id}
-            coordinate={{ latitude: property.lat, longitude: property.lng }}
-            title={property.address}
-            pinColor={selectedProperty?.id === property.id ? 'blue' : 'red'}
-          />
+          property.latitude && property.longitude && (
+            <Marker
+              key={property.id}
+              coordinate={{ latitude: property.latitude, longitude: property.longitude }}
+              title={property.address}
+              pinColor={selectedProperty?.id === property.id ? 'blue' : 'red'}
+            />
+          )
         ))}
       </MapView>
+
+      {/* Loading indicator */}
+      {loading && (
+        <Text style={{ color: colors.text, textAlign: 'center', marginBottom: 10 }}>
+          Loading properties...
+        </Text>
+      )}
 
       {/* Property List */}
       <FlatList
