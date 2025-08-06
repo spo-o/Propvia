@@ -25,6 +25,12 @@ export default function PropertyAnalysisDialog({
 
   const analysis = property.analysis[selectedBusiness];
 
+  const tabs = [
+    { id: "recommendations", label: "AI Recommendations", icon: "🎯" },
+    { id: "financials", label: "Financial Forecast", icon: "📊" },
+    { id: "details", label: "Property Details", icon: "🏢" },
+  ];
+
   const handleSave = () => {
     const scenario: SavedScenario = {
       id: Date.now().toString(),
@@ -64,7 +70,7 @@ export default function PropertyAnalysisDialog({
       case 'recommendations':
         return (
           <>
-            <div className="grid grid-cols-3 gap-6 mb-8">
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
               <button
                 onClick={() => setSelectedBusiness('daycare')}
                 className={`p-4 rounded-lg border-2 transition-colors ${
@@ -143,7 +149,7 @@ export default function PropertyAnalysisDialog({
 
             <div className="grid grid-cols-2 gap-8">
               <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-4">Business Analysis</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -185,7 +191,7 @@ export default function PropertyAnalysisDialog({
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-4">Competition Analysis</h3>
                   <div className="space-y-4">
                     <div>
@@ -217,7 +223,7 @@ export default function PropertyAnalysisDialog({
               </div>
 
               <div className="space-y-6">
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-4">Growth Projections</h3>
                   <div className="space-y-4">
                     <div>
@@ -259,7 +265,7 @@ export default function PropertyAnalysisDialog({
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="text-lg font-semibold mb-4">Risk Analysis</h3>
                   <div className="space-y-4">
                     <div className={`p-4 rounded-lg ${
@@ -394,7 +400,7 @@ export default function PropertyAnalysisDialog({
                       </div>
                       <span className="font-semibold">{property.lotSize.toLocaleString()} sqft</span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-1">
                       <div className="flex items-center">
                         <Home className="w-5 h-5 text-gray-500 mr-2" />
                         <span>Zoning</span>
@@ -494,9 +500,9 @@ export default function PropertyAnalysisDialog({
                     </Dialog.Title>
                     <Dialog.Description className="text-gray-600 mt-1 flex items-center space-x-2">
                       <span>{property?.address}</span>
-                      <div className="w-2 h-2 bg-brand rounded-full"></div>
-                      <span className="text-sm px-2 py-1 bg-brand/10 text-brand rounded-full font-medium">
-                        Commercial Property
+                      <span className="w-2 h-2 bg-brand rounded-full"></span>
+                      <span className="text-sm px-2 py-1 bg-brand/10 text-brand rounded-full font-medium whitespace-nowrap">
+                        {property.zoning}
                       </span>
                     </Dialog.Description>
                   </div>
@@ -509,12 +515,8 @@ export default function PropertyAnalysisDialog({
 
             <div className="p-6">
               {/* Enhanced Tab Navigation */}
-              <div className="flex flex-wrap gap-2 mb-8">
-                {[
-                  { id: 'recommendations', label: 'AI Recommendations', icon: '🎯' },
-                  { id: 'financials', label: 'Financial Forecast', icon: '📊' },
-                  { id: 'details', label: 'Property Details', icon: '🏢' }
-                ].map((tab) => (
+              <div className="flex flex-wrap gap-2 mb-8 justify-center border-b-emerald-700 border-b-4 pb-2">
+                {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as Tab)}

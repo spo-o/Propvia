@@ -31,6 +31,9 @@ import GuidePage from './pages/GuidePage';
 import Contact from './pages/Contact';
 import Careers from './pages/Careers';
 import SuccessPage from './pages/Success';
+import PaymentProcessingScreen from "./pages/PaymentProcessingScreen";
+import Usage from './pages/Usage';
+
 
 
 
@@ -101,7 +104,7 @@ function AppContent() {
   const renderWithLayout = (component: React.ReactNode, showSidebar = true) => (
     <div className="flex-1 flex">
       {showSidebar && <Sidebar />}
-      <main className={`flex-1 flex flex-col min-h-0 ${showSidebar ? 'lg:ml-64' : ''}`}>
+      <main className={`flex-1 flex flex-col min-h-0 ${showSidebar ? 'lg:ml-10' : ''}`}>
         <div className="flex-1 pt-16">
           {component}
         </div>
@@ -144,7 +147,15 @@ function AppContent() {
         <Route path="/guides/:id" element={renderWithLayout(<GuidePage />, false)} />
         <Route path="/contact" element={renderWithLayout(<Contact />, false)} />
         <Route path="/careers" element={renderWithLayout(<Careers />, false)} />
-        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/success" element={<PaymentProcessingScreen />} />
+        <Route path="/payment-success/:requestId" element={<SuccessPage />} />
+        
+        <Route path="/usage" element={
+        <ProtectedRoute>
+          {renderWithLayout(<Usage />)}
+        </ProtectedRoute>
+      } />
+
         
         <Route path="/reports" element={
           <ProtectedRoute>
@@ -163,7 +174,7 @@ function AppContent() {
         } />
         <Route path="/requests" element={
           <ProtectedRoute>
-            {renderWithLayout(<RequestsList savedScenarios={savedScenarios} />)}
+            {renderWithLayout(<RequestsList/>)}
           </ProtectedRoute>
         } />
         <Route path="/team" element={

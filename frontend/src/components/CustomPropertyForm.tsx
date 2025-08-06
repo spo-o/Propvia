@@ -90,20 +90,26 @@ export default function CustomPropertyForm({
     setIsProcessing(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/saveProperty`, {
+      const savePropertyResponse = await fetch(`${API_BASE_URL}/saveProperty`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, selectedPackage }),
       });
 
-      const result = await response.json();
+      const savePropertyResult = await savePropertyResponse.json();
 
-      if (!response.ok) {
-        showToast(result.error || "Failed to submit request", "error");
+      if (!savePropertyResponse.ok) {
+        showToast(savePropertyResult.error || "Failed to submit request", "error");
+        setIsProcessing(false)
         return;
       }
 
-      // Redirect after successful save
+      console.log(savePropertyResult)
+      const requestId = savePropertyResult.id
+
+
+
+      // create the checkout session
       const checkoutRes = await fetch("http://localhost:5050/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,6 +117,7 @@ export default function CustomPropertyForm({
           packageTier: selectedPackage.toLowerCase(),
           customerEmail: data.email,
           first_name: data.first_name,
+          propertyRequestId: requestId,
           formData: data, // full object
         }),
       });

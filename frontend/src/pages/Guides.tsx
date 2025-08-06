@@ -205,60 +205,101 @@ Welcome to Propvia's comprehensive platform guide. This guide will help you navi
 
 export default function Guides() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Guides & Resources</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Everything you need to know about commercial property analysis and investment. 
-          Browse our comprehensive guides and download helpful resources.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-brand to-brand-600 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            Guides & <span className="text-accent">Resources</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-100 max-w-3xl mx-auto leading-relaxed">
+            Everything you need to master commercial property analysis and investment. 
+            From beginner basics to advanced strategies.
+          </p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-        {guides.map((guide) => {
-          const Icon = guide.icon;
-          return (
-            <div 
-              key={guide.id} 
-              className="bg-white rounded-lg shadow-lg p-6 transform transition-transform hover:scale-[1.02]"
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        {/* Guide Cards Section */}
+        <div className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Comprehensive Learning Guides
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Deep-dive into our expertly crafted guides designed to accelerate your property investment journey
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {guides.map((guide, index) => {
+              const Icon = guide.icon;
+              return (
+                <div 
+                  key={guide.id} 
+                  className="group relative bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl border border-gray-100"
+                  style={{ 
+                    animationDelay: `${index * 100}ms`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
+                >
+                  {/* Background decoration */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand/5 to-accent/5 rounded-full -translate-y-16 translate-x-16"></div>
+                  
+                  <div className="relative z-10">
+                    {/* Icon and Title */}
+                    <div className="flex flex-col items-center text-center mb-6">
+                      <div className="p-4 bg-gradient-to-br from-brand to-brand-600 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <Icon className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{guide.title}</h3>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-gray-600 mb-8 leading-relaxed text-center">{guide.description}</p>
+
+                    {/* CTA Button */}
+                    <Link 
+                      to={`/guides/${guide.id}`}
+                      className="group/btn w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-brand to-brand-600 text-white rounded-xl font-semibold transition-all duration-300 hover:from-brand-600 hover:to-brand-700 hover:shadow-lg"
+                    >
+                      <span className="mr-2">Start Learning</span>
+                      <ChevronRight className="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Resources Section */}
+        <DownloadableResources />
+
+        {/* CTA Section */}
+        <div className="mt-20 relative overflow-hidden bg-gradient-to-r from-brand to-brand-600 rounded-3xl p-12 text-center text-white">
+          {/* Background decoration */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-4 left-4 w-8 h-8 bg-white rounded-full"></div>
+            <div className="absolute top-12 right-8 w-4 h-4 bg-accent rounded-full"></div>
+            <div className="absolute bottom-8 left-12 w-6 h-6 bg-white rounded-full"></div>
+            <div className="absolute bottom-4 right-4 w-10 h-10 bg-accent rounded-full"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Need Personalized Guidance?</h2>
+            <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
+              Our team of commercial real estate experts is ready to provide you with tailored advice and strategic insights for your specific investment goals.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-flex items-center px-8 py-4 bg-accent text-brand rounded-xl hover:bg-accent-dark transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <div className="flex items-center mb-4">
-                <div className="p-3 bg-brand/10 rounded-lg">
-                  <Icon className="w-6 h-6 text-brand" />
-                </div>
-                <div className="ml-4">
-                  <h2 className="text-xl font-bold text-gray-900">{guide.title}</h2>
-                </div>
-              </div>
-
-              <p className="text-gray-600 mb-6">{guide.description}</p>
-
-              <Link 
-                to={`/guides/${guide.id}`}
-                className="inline-flex items-center text-brand hover:text-brand-600 font-medium"
-              >
-                <span className="mr-2">Read Guide</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-
-      <DownloadableResources />
-
-      <div className="mt-16 bg-brand rounded-lg p-8 text-center text-white">
-        <h2 className="text-2xl font-bold mb-4">Need Custom Guidance?</h2>
-        <p className="text-gray-100 mb-6">
-          Our team of experts is here to help you with personalized advice and support.
-        </p>
-        <Link
-          to="/contact"
-          className="inline-flex items-center px-6 py-3 bg-accent text-brand rounded-lg hover:bg-accent-dark transition-colors"
-        >
-          Contact Our Team
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Link>
+              Get Expert Consultation
+              <ArrowRight className="w-6 h-6 ml-3" />
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

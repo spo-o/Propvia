@@ -45,8 +45,8 @@ export async function generatePdf(formData: CustomPropertyType): Promise<Buffer>
       .moveDown(1);
 
     // --- Tier ---
-    const tier = formData.selectedPackage
-      ? formData.selectedPackage.toUpperCase()
+    const tier = formData.selected_package
+      ? formData.selected_package.toUpperCase()
       : 'Not Specified';
     doc.fontSize(13).fillColor('#117A65')
       .text(`Selected Report Tier: ${tier}`, { align: 'left', underline: true })

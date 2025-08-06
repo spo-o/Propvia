@@ -12,6 +12,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
 import { useAuthStore } from '../store/authStore';
 import { useToastStore } from '../store/toastStore';
+import PropertyCard from './PropertyCard';
 
 interface PropertyListProps {
   properties: Property[];
@@ -87,329 +88,183 @@ export default function PropertyList({ properties, selectedProperty, onPropertyS
     onPropertySelect(property);
   };
 
+  const getFilterTitle = (filter: string) => {
+    switch (filter) {
+      case "minPrice":
+        return "Min Price"
+      case "maxPrice":
+        return "Max Price"
+      case "propertyType":
+        return "Type"
+      case "minSquareFeet":
+        return "Min SQFT"
+      default:
+        break;
+    }
+  }
+
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search properties..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-2 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            <span>Filters</span>
-          </button>
-          
-          {Object.entries(filters).map(([key, value]) => (
-            value !== 'all' && value !== 0 && (
-              <motion.span
-                key={key}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-              >
-                {key}: {value}
-              </motion.span>
-            )
-          ))}
-        </div>
-
-        {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="space-y-4 bg-gray-50 p-4 rounded-lg"
-          >
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                  value={filters.minPrice}
-                  onChange={(e) => setFilters({ ...filters, minPrice: Number(e.target.value) })}
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-full sm:w-1/2 px-3 py-1 border rounded"
-                  value={filters.maxPrice}
-                  onChange={(e) => setFilters({ ...filters, maxPrice: Number(e.target.value) })}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
-              <select
-                className="w-full px-3 py-1 border rounded"
-                value={filters.propertyType}
-                onChange={(e) => setFilters({ ...filters, propertyType: e.target.value })}
-              >
-                <option value="all">All</option>
-                <option value="commercial">Commercial</option>
-                <option value="mixed-use">Mixed-Use</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Square Feet</label>
-              <input
-                type="number"
-                placeholder="Min sqft"
-                className="w-full px-3 py-1 border rounded"
-                value={filters.minSquareFeet}
-                onChange={(e) => setFilters({ ...filters, minSquareFeet: Number(e.target.value) })}
+    <div className="h-full flex flex-col bg-gray-50/30">
+      {/* Modern Property Cards Section */}
+      <div className="flex-1 overflow-auto">
+        {paginatedProperties.length > 0 ? (
+          <div className="p-6 space-y-6">
+            {paginatedProperties.map((property, index) => (
+              <PropertyCard
+                key={property.id}
+                handleAnalyzeProperty={handleAnalyzeProperty}
+                handleShare={handleShare}
+                handleViewReport={handleViewReport}
+                index={index}
+                property={property}
+                selectedProperty={selectedProperty}
               />
+            ))}
+          </div>
+        ) : (
+          /* Improved Empty State */
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center space-y-3 max-w-sm">
+              <div className="bg-gray-100 rounded-2xl p-4 w-16 h-16 mx-auto flex items-center justify-center">
+                <Building2 className="w-8 h-8 text-gray-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">No Properties Found</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {searchTerm ? 
+                    `No matches for "${searchTerm}". Try different keywords.` :
+                    'No properties available with the current filters.'
+                  }
+                </p>
+              </div>
+              {(searchTerm || Object.values(filters).some(v => v !== 'all' && v !== 0)) && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setFilters({ minPrice: 0, maxPrice: 1000000, propertyType: 'all', minSquareFeet: 0 });
+                  }}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+                >
+                  Clear All Filters
+                </button>
+              )}
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="space-y-4 p-4">
-          {paginatedProperties.map((property, index) => (
-            <motion.div
-              key={property.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={clsx(
-                'cursor-pointer rounded-lg overflow-hidden shadow-md transition-all',
-                selectedProperty?.id === property.id
-                  ? 'ring-2 ring-blue-500 scale-[1.02]'
-                  : 'hover:scale-[1.01]'
-              )}
-              onClick={() => onPropertySelect(property)}
-            >
-              <div className="relative">
-                <img
-                  src={property.thumbnail}
-                  alt={property.address}
-                  className="w-full h-48 object-cover"
-                />
-                <button
-                  onClick={(e) => handleShare(property, e)}
-                  className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
-                >
-                  <Share2 className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-
-              <div className="p-4 bg-white">
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
-                  <h3 className="font-semibold text-lg">{property.address}</h3>
-                  <span className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full whitespace-nowrap">
-                    {property.zoning}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <Target className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm font-medium">Opportunity Score</span>
-                      </div>
-                      <span className={clsx(
-                        'text-lg font-bold',
-                        getScoreColor(property.opportunityScore.overall)
-                      )}>
-                        {property.opportunityScore.overall}%
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Growth</span>
-                        <span>{property.opportunityScore.growth}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">ROI</span>
-                        <span>{property.opportunityScore.roi}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Market</span>
-                        <span>{property.opportunityScore.market}%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <Users2 className="w-4 h-4 text-purple-500" />
-                        <span className="text-sm font-medium">Community Score</span>
-                      </div>
-                      <span className={clsx(
-                        'text-lg font-bold',
-                        getScoreColor(property.communityScore.overall)
-                      )}>
-                        {property.communityScore.overall}%
-                      </span>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Diversity</span>
-                        <span>{property.communityScore.diversity}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Engagement</span>
-                        <span>{property.communityScore.engagement}%</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Services</span>
-                        <span>{property.communityScore.services}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Building2 className="w-4 h-4" />
-                    <span className="text-sm">{property.sqft.toLocaleString()} sqft</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <DollarSign className="w-4 h-4" />
-                    <span className="text-sm">${property.renovationCost.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Users className="w-4 h-4" />
-                    <span className="text-sm">{property.familyPercentage}% families</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm">Built {property.yearBuilt}</span>
-                  </div>
-                </div>
-
-                <details className="mb-4">
-                  <summary className="flex items-center justify-between cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900">
-                    <span>Building Overview</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </summary>
-                  <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-2">
-                    <p className="text-sm text-gray-600">{property.buildingOverview.description}</p>
-                    <div className="space-y-1">
-                      {property.buildingOverview.highlights.map((highlight, i) => (
-                        <div key={i} className="flex items-center space-x-2 text-sm">
-                          <Star className="w-3 h-3 text-yellow-500" />
-                          <span>{highlight}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </details>
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <button
-                    className="flex-1 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
-                    onClick={(e) => handleAnalyzeProperty(e, property)}
-                  >
-                    {isAuthenticated ? 'Analyze Property' : (
-                      <div className="flex items-center justify-center space-x-2">
-                        <Lock className="w-4 h-4" />
-                        <span>Sign in to Analyze</span>
-                      </div>
-                    )}
-                  </button>
-                  <Tooltip.Provider>
-                    <Tooltip.Root>
-                      <Tooltip.Trigger asChild>
-                        <button
-                          className="flex items-center justify-center p-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                          onClick={(e) => handleViewReport(e, property.id)}
-                        >
-                          <FileText className="w-5 h-5 text-gray-600" />
-                        </button>
-                      </Tooltip.Trigger>
-                      <Tooltip.Portal>
-                        <Tooltip.Content
-                          className="bg-gray-900 text-white px-3 py-2 rounded text-sm"
-                          sideOffset={5}
-                        >
-                          View Full Report
-                        </Tooltip.Content>
-                      </Tooltip.Portal>
-                    </Tooltip.Root>
-                  </Tooltip.Provider>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
+      {/* Modern Pagination */}
       {totalPages > 1 && (
-        <div className="border-t p-4 flex items-center justify-between">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded-md hover:bg-gray-50 disabled:opacity-50"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+        <div className="border-t border-gray-200/60 bg-white/95 backdrop-blur-sm px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-sm"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600 font-medium">
+              {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filteredProperties.length)} of {filteredProperties.length}
+            </span>
+            <div className="hidden sm:flex items-center space-x-1">
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                let page;
+                if (totalPages <= 5) {
+                  page = i + 1;
+                } else if (currentPage <= 3) {
+                  page = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  page = totalPages - 4 + i;
+                } else {
+                  page = currentPage - 2 + i;
+                }
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      page === currentPage 
+                        ? 'bg-blue-500 text-white shadow-md' 
+                        : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
 
+      {/* Modern Share Dialog */}
       <Dialog.Root open={!!selectedPropertyForShare} onOpenChange={() => setSelectedPropertyForShare(null)}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-          <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-xl">
-            <Dialog.Title className="text-xl font-semibold mb-4">
-              Share Property
+          <Dialog.Overlay className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md z-50">
+            <Dialog.Title className="text-xl font-bold text-gray-900 mb-4 flex items-center space-x-3">
+              <div className="bg-blue-100 rounded-xl p-2">
+                <Share2 className="w-5 h-5 text-blue-600" />
+              </div>
+              <span>Share Property</span>
             </Dialog.Title>
             
             {selectedPropertyForShare && (
               <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={selectedPropertyForShare.thumbnail}
-                    alt={selectedPropertyForShare.address}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h3 className="font-medium">{selectedPropertyForShare.address}</h3>
-                    <p className="text-sm text-gray-600">{selectedPropertyForShare.sqft.toLocaleString()} sqft</p>
+                {/* Compact Property Preview */}
+                <div className="bg-gray-50 rounded-xl p-3 border">
+                  <div className="flex items-center space-x-3">
+                    <img
+                      src={selectedPropertyForShare.thumbnail}
+                      alt={selectedPropertyForShare.address}
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">{selectedPropertyForShare.address}</h3>
+                      <p className="text-sm text-gray-600">
+                        {selectedPropertyForShare.sqft.toLocaleString()} sqft • {selectedPropertyForShare.zoning}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Share Actions */}
                 <div className="space-y-2">
                   <button
                     onClick={() => copyShareLink(selectedPropertyForShare)}
-                    className="w-full flex items-center justify-center space-x-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    className="w-full px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2"
                   >
-                    <span>Copy Link</span>
                     <ExternalLink className="w-4 h-4" />
+                    <span>Copy Share Link</span>
                   </button>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <button className="flex items-center justify-center space-x-2 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                      <span className="text-lg">📧</span>
+                      <span className="text-sm">Email</span>
+                    </button>
+                    <button className="flex items-center justify-center space-x-2 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                      <span className="text-lg">💬</span>
+                      <span className="text-sm">Message</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
 
-            <Dialog.Close className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-500">
-              <X className="w-5 h-5" />
+            <Dialog.Close className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+              <X className="w-4 h-4" />
             </Dialog.Close>
           </Dialog.Content>
         </Dialog.Portal>
