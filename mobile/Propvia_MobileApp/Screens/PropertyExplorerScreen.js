@@ -1,37 +1,47 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useTheme } from '../ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PropertyExplorerScreen() {
   const { colors } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
-  const [properties, setProperties] = useState([]); // <-- NEW
-  const [loading, setLoading] = useState(true);     // <-- NEW
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
   const mapRef = useRef(null);
 
-  // Fetch properties from backend
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch('http://192.168.0.235:5050/api/property/live?country=US&state=MI&city=Detroit');
-        const data = await res.json();
-        console.log('Fetched properties:', data);
-        setProperties(Array.isArray(data) ? data : []); // <-- Defensive assignment
-      } catch (err) {
-        console.error('Failed to fetch properties:', err);
-        setProperties([]); // <-- Ensure it's always an array
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProperties();
-  }, []);
+  // Fetch properties from Supabase REST API
+  const fetchProperties = async () => {
+    setLoading(true);
+    try {
+      const SUPABASE_URL = 'https://dvqjatjbjgcmosvuvhzj.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cWphdGpiamdjbW9zdnV2aHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5ODE1MTEsImV4cCI6MjA1OTU1NzUxMX0.VRt9c3LyWZSJobnp8t44b7sPnFAGhquhSiraCArA6xU';
 
-  // Use fetched properties instead of mock data
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/liveproperties?select=*`, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      });
+      const data = await res.json();
+      setProperties(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Supabase REST fetch error:', error);
+      setProperties([]);
+    }
+    setLoading(false);
+  };
+
+  // Refresh when page is focused (entered or re-entered)
+  useFocusEffect(
+    useCallback(() => {
+      fetchProperties();
+    }, [])
+  );
+
   const filteredProperties = Array.isArray(properties)
     ? properties.filter(property =>
         property.address?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -57,7 +67,7 @@ export default function PropertyExplorerScreen() {
         Discover and analyze commercial properties
       </Text>
 
-      {/* Search Bar */}
+      {/* Search Bar with Refresh Button */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#5D6A75" style={styles.searchIcon} />
         <TextInput
@@ -67,6 +77,9 @@ export default function PropertyExplorerScreen() {
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
+        <TouchableOpacity onPress={fetchProperties} style={{ marginLeft: 8 }}>
+          <Ionicons name="refresh" size={22} color="#5D6A75" />
+        </TouchableOpacity>
       </View>
 
       {/* Embedded Map showing all markers */}
@@ -75,10 +88,10 @@ export default function PropertyExplorerScreen() {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
-          latitude: 39.8283,
-          longitude: -98.5795,
-          latitudeDelta: 30,
-          longitudeDelta: 30,
+          latitude: 42.3314,
+          longitude: -83.0458,
+          latitudeDelta: 0.15,
+          longitudeDelta: 0.15,
         }}
       >
         {filteredProperties.map((property) => (
