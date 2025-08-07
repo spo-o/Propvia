@@ -26,7 +26,7 @@ export default function AskAiLandingScreen() {
         <Text style={[styles.subheading, { color: isDark ? '#ccc' : '#555' }]}>Ask natural language questions and receive smart, personalized recommendations for real estate investment and development opportunities.</Text>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('AskAiQuery')}
+          onPress={() => navigation.navigate('AskAiSearchQuery')}
           style={styles.askButton}
         >
           <Text style={styles.askButtonText}>Try Ask-AI</Text>

@@ -21,6 +21,7 @@ import BlogScreen from './Screens/BlogScreen';
 import GuidesScreen from './Screens/GuidesScreen';
 import FAQScreen from './Screens/FAQScreen';
 import AskAiLandingScreen from './Screens/AskAiLandingScreen';
+import AskAiSearchQueryScreen from './Screens/AskAiSearchQueryScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -126,6 +127,11 @@ function MainStack() {
         component={AskAiLandingScreen}
         options={{ header: ({ route }) => <CustomHeader route={route} /> }}
       />
+      <Stack.Screen
+  name="AskAiSearchQuery"
+  component={AskAiSearchQueryScreen}
+  options={{ header: ({ route }) => <CustomHeader route={route} /> }}
+/>
     </Stack.Navigator>
   );
 }
