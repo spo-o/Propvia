@@ -20,6 +20,8 @@ import removeRoute from './routes/team/remove';
 import updateRoleRoute from './routes/team/updateRole';
 import savePropertyRouter from './routes/property/saveProperty';
 import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
+import askAiRouter from './routes/ai/ask_ai';
+
 
 import loopnetRoutes from './routes/property/loopnet';
 
