@@ -631,7 +631,7 @@ export default function CustomPropertyForm({
                 {isProcessing ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Processing...</span>
+                    <span>Analysis In Progress</span>
                   </>
                 ) : (
                   <>

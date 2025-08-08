@@ -2,6 +2,8 @@ export interface Property {
   id: string;
   address: string;
   sqft: number;
+  price?: number;         // ← from LoopNet API
+  image?: string | null;  // ← from LoopNet API
   familyPercentage: number;
   renovationCost: number;
   latitude: number;
@@ -228,4 +230,15 @@ export type FilterType = {
   value: string | number,
   title: string,
   isActive: boolean
+}
+
+export interface MapProperty {
+  id: string;
+  address: string;
+  sqft: number;
+  latitude: number | null;
+  longitude: number | null;
+  price: number;
+  zoning: string;
+  image: string | null;
 }

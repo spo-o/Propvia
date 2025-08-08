@@ -30,6 +30,8 @@ export const useAuthStore = create<AuthState>()(
       isAdmin: false,
 
       setAuth: (user, token) => {
+        localStorage.setItem('user_id', user.id); // ✅ Save to localStorage
+      
         set({
           user,
           token,
@@ -37,8 +39,11 @@ export const useAuthStore = create<AuthState>()(
           isAdmin: user.email === ADMIN_EMAIL,
         });
       },
+      
 
       logout: () => {
+        localStorage.removeItem('user_id'); // ✅ Clear on logout
+      
         set({
           user: null,
           token: null,

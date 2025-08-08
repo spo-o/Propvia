@@ -1,29 +1,27 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Property } from "../types";
-import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import L from "leaflet";
-import {
-  getValidProperties,
-  getBounds,
-  getMarkerIcon,
-} from "../utils/mapHelpers";
-import MapPopup from "./MapPopup";
-// import { fetchAllProperties } from '../api/map';
+import "leaflet/dist/leaflet.css";
 
-interface MapProps {
-  properties: Property[]; // Backend Logic Found: Property data fetched from backend
-  selectedProperty: Property | null;
-  onPropertySelect: (property: Property) => void;
-}
+import {  Property } from "../types";
+import { getMarkerIcon } from "../utils/mapHelpers";
+import MapPopup from "./MapPopup";
+
+type Props = {
+  properties: Property[];
+  selectedProperty?: Property;
+  onPropertySelect: (selection: Property) => void;
+};
 
 export default function Map({
   properties,
   selectedProperty,
   onPropertySelect,
-}: MapProps) {
+}: Props) {
+  const [bounds, setBounds] = useState<[number, number][] | null>(null);
+
   useEffect(() => {
-    // Fix Leaflet icon issue
+    // Fix Leaflet marker images
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl:
@@ -33,11 +31,28 @@ export default function Map({
       shadowUrl:
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
     });
+    // Compute bounds from valid properties
+    const valid = properties.filter(
+      p => typeof p.latitude === "number" && typeof p.longitude === "number"
+    );
+
+    if (valid.length > 0) {
+      const latlngs = valid.map(
+        p => [p.latitude!, p.longitude!] as [number, number]
+      );
+      setBounds(latlngs);
+    } else {
+      setBounds(null);
+    }
   }, []);
 
-  // Calculate bounds for all properties
-  const validProperties = getValidProperties(properties);
-  const bounds = getBounds(properties);
+  if (!bounds) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        No properties to display on map.
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full">
@@ -48,29 +63,6 @@ export default function Map({
             width: 100%;
             z-index: 0;
           }
-          .custom-marker {
-            background: none;
-            border: none;
-          }
-          .leaflet-control-zoom {
-            border: none !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-          }
-          .leaflet-control-zoom a {
-            border-radius: 8px !important;
-            border: none !important;
-            background: white !important;
-            color: #374151 !important;
-            font-weight: 600 !important;
-            box-shadow: none !important;
-          }
-          .leaflet-control-zoom a:hover {
-            background: #f3f4f6 !important;
-          }
-          .leaflet-popup-content-wrapper {
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-          }
         `}
       </style>
       <MapContainer bounds={bounds} boundsOptions={{ padding: [50, 50] }}>
@@ -78,17 +70,13 @@ export default function Map({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        // Backend Logic Found: Rendering map markers using backend property
-        data
-        {properties.map(property => {
-          if (
-            typeof property.latitude !== "number" ||
-            typeof property.longitude !== "number"
-          ) {
-            return null;
-          }
 
-          return (
+        {properties
+          .filter(
+            p =>
+              typeof p.latitude === "number" && typeof p.longitude === "number"
+          )
+          .map(property => (
             <Marker
               key={property.id}
               position={[property.latitude, property.longitude]}
@@ -102,8 +90,7 @@ export default function Map({
                 />
               </Popup>
             </Marker>
-          );
-        })}
+          ))}
       </MapContainer>
     </div>
   );

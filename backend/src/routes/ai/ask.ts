@@ -1,44 +1,80 @@
-// backend/src/routes/ai/ask.ts
-import { Router, Request, Response } from 'express';
-import { authMiddleware, AuthenticatedRequest } from '../../middlewares/authMiddleware';
+import express, { Request, Response, NextFunction } from 'express';
+import { supabaseAdmin } from '../../services/supabaseClient';
+//import { incrementUsage } from '../../utils/usage'; // optional, if usage tracking is centralized
+import dotenv from 'dotenv';
 
-const router = Router();
+dotenv.config();
 
-router.post('/', authMiddleware, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  const { query } = req.body;
+const router = express.Router();
 
-  if (!query || typeof query !== 'string') {
-    res.status(400).json({ error: 'Query is required and must be a string.' });
-    return;
+router.post('/ask', async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
+  const { userId, prompt } = req.body;
+
+  if (!userId || !prompt) {
+     res.status(400).json({ error: 'Missing userId or prompt' });
+     return;
   }
 
-  // Simulated AI response
-  const simulatedResponse = `Based on your query "${query}", here are our recommendations:
+  try {
+    console.log('🧠 ASK received prompt:', prompt);
 
-1. Detroit Midtown District
-   - High foot traffic area with 15,000+ daily pedestrians
-   - Recent development projects totaling $2.1B in investment
-   - Walk score: 92, Transit score: 85
-   - Demographics: 65% young professionals, median income $68,000
-   - Upcoming events: Annual Arts Festival (50,000+ attendees)
+    // Step 1: Very basic mock keyword extraction
+    const budgetMatch = prompt.match(/\$?(\d{2,5})k/i);
+    const budget = budgetMatch?.[1] ? parseInt(budgetMatch[1]) * 1000 : 100000; // 100k fallback
+    
+    const location = prompt.toLowerCase().includes('north') ? 'north' : '';
 
-2. Corktown Neighborhood
-   - Historic district with growing food scene
-   - 28% increase in business licenses issued last year
-   - Major tech company moving in (1,000+ employees)
-   - Demographics: Mixed residential/commercial, family-friendly
-   - Development: $500M mixed-use project breaking ground
+    console.log(`🔍 Budget parsed: ${budget} | Location keyword: ${location}`);
 
-3. Eastern Market District
-   - 45,000+ weekly visitors during market days
-   - Food-centric business cluster
-   - Recent infrastructure improvements
-   - Strong community engagement
-   - Business incentives available for food-related ventures
+    // Step 2: Query enriched_properties with filters
+    let query = supabaseAdmin
+      .from('enriched_properties')
+      .select('*')
+      .lte('askingPrice', budget)
+      .limit(100); // Limit base results before scoring
 
-These locations align with current market trends and show strong potential for growth based on demographic shifts, development patterns, and economic indicators.`;
+    const { data, error } = await query;
 
-  res.status(200).json({ response: simulatedResponse });
+    if (error) {
+      console.error('❌ Error fetching properties:', error);
+      res.status(500).json({ error: 'Failed to fetch properties' });
+      return;
+    }
+
+    // Step 3: Score based on ROI + Market + Growth
+    const scored = (data || [])
+      .filter((p) =>
+        location
+          ? p.address?.toLowerCase().includes('north') ||
+            (p.latitude && p.latitude > 42.35) // example for Detroit "north"
+          : true
+      )
+      .map((p) => {
+        const score =
+          (p.roi ?? 1) * 0.5 + (p.market ?? 1) * 0.3 + (p.growth ?? 1) * 0.2;
+
+        return { ...p, score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 1);
+
+    // Step 4: Increment ASK usage
+    try {
+      await fetch(`${process.env.API_BASE_URL}/usage/increment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, type: 'ask' }),
+      });
+    } catch (error) {
+      //console.warn('⚠️ Failed to increment usage:', (error as Error).message);
+    }
+    
+
+    res.json(scored);
+  } catch (err) {
+    console.error('❌ ASK route error:', err);
+    res.status(500).json({ error: 'Server error while processing ASK' });
+  }
 });
 
 export default router;

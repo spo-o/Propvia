@@ -20,19 +20,25 @@ import removeRoute from './routes/team/remove';
 import updateRoleRoute from './routes/team/updateRole';
 import savePropertyRouter from './routes/property/saveProperty';
 import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
+import askAiRouter from './routes/ai/ask_ai';
+
 
 import loopnetRoutes from './routes/property/loopnet';
 
-import stripeWebhookRouter from './routes/stripe/webhook';
+import stripeWebhook from './routes/stripe/webhook';
+
+
 import getStripeSessionDetailsRouter from './routes/stripe/getStripeSessionDetails'
 import checkPaymentStatusRouter from './routes/stripe/checkPaymentStatus';
 import getReportsByUserRoute from './routes/reports/getByUser';
 import usageIncrementRouter from './routes/usage/increment';
 
+import createSubscriptionSession from './routes/stripe/createUserSubscription';
+
+
 
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
-
-
+import askAiRoute from './routes/ai/ask_ai';
 
 
 dotenv.config();
@@ -41,7 +47,7 @@ const app = express();
 app.use(cors());
 
 //  Stripe webhook needs raw body
-app.use('/api/stripe/webhook', stripeWebhookRouter);
+app.use('/api/stripe/webhook', stripeWebhook);
 
 // All other routes can use JSON body parser
 app.use(express.json());
@@ -76,10 +82,13 @@ app.use('/api/team/accept', acceptRoute);
 app.use('/api/team/remove', removeRoute);
 app.use('/api/team/updateRole', updateRoleRoute);
 
-// Stripe checkout
+// Stripe checkout for custom property analysis
 app.use('/api/checkout', stripeCheckoutRoute);
 app.use('/api/stripe', getStripeSessionDetailsRouter);
 app.use('/api', checkPaymentStatusRouter);
+
+//Stripe for user subscription
+app.use('/api/stripe/create-subscription-session', createSubscriptionSession);
 
 
 // live geo data
@@ -90,8 +99,8 @@ app.use('/api/usage/increment', usageIncrementRouter);
 app.use('/api/usage/by-user', getUsageByUserRoute);
 
 
-
-
+//ASK
+app.use('/api/ask_ai', askAiRoute);
 
 
 
