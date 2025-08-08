@@ -138,13 +138,16 @@ router.get('/live', async (req: Request, res: Response, next: NextFunction): Pro
  */
 router.post('/populate', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    console.log(" Starting LoopNet data fetch with pagination...");
+    console.log(" Starting LoopNet data fetch for Detroit with pagination...");
 
+    const maxPages = 50;
+    const seenIds = new Set();
     let allListings: any[] = [];
-    let page = 1;
 
-    while (true) {
-      console.log(`➡️ Fetching page ${page} from /live`);
+    let page = 1;
+    while (page <= maxPages) {
+      console.log(`➡️ Fetching page ${page}...`);
+
       const params = new URLSearchParams({
         country: 'US',
         state: 'MI',
@@ -161,12 +164,32 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
 
       if (!listings.length) break;
 
-      allListings = allListings.concat(listings);
+      let newCount = 0;
+      let duplicateCount = 0;
+
+      const newListings = listings.filter((item: any) => {
+        if (seenIds.has(item.id)) {
+          duplicateCount++;
+          return false;
+        }
+        seenIds.add(item.id);
+        newCount++;
+        return true;
+      });
+
+      console.log(` Page ${page}: ${newCount} new, ${duplicateCount} duplicate`);
+
+      if (!newListings.length) {
+        console.log(' No new listings found. Ending pagination.');
+        break;
+      }
+
+      allListings = allListings.concat(newListings);
       page++;
     }
 
     if (!allListings.length) {
-      console.warn('⚠️ No listings found across any pages');
+      console.warn('⚠️ No listings found from LoopNet.');
       res.status(400).json({ error: 'No listings found from live fetch' });
       return;
     }
@@ -205,6 +228,7 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
   }
 });
 
+
 /**
  * GET /api/property
  * - Serves stored properties with pagination
@@ -219,10 +243,6 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
     const to = from + pageSize - 1;
 
     const { city, zoning, minPrice, maxPrice, sortBy, sortOrder } = req.query;
-
-    console.log(` Fetching from DB with filters:`, {
-      city, zoning, minPrice, maxPrice, sortBy, sortOrder
-    });
 
     let query = supabase
       .from(TABLE_NAME)
@@ -255,7 +275,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction): Promise
       return;
     }
 
-    console.log(` Fetched ${data?.length || 0} records from DB.`);
+    
 
     res.json({
       data,

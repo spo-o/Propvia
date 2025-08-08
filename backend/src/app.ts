@@ -20,11 +20,14 @@ import removeRoute from './routes/team/remove';
 import updateRoleRoute from './routes/team/updateRole';
 import savePropertyRouter from './routes/property/saveProperty';
 import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
+import askAiRouter from './routes/ai/ask_ai';
+
 
 import loopnetRoutes from './routes/property/loopnet';
 
-import stripeWebhookRouter from './routes/stripe/webhook';
-import webhook from './routes/stripe/webhook';
+import stripeWebhook from './routes/stripe/webhook';
+
+
 import getStripeSessionDetailsRouter from './routes/stripe/getStripeSessionDetails'
 import checkPaymentStatusRouter from './routes/stripe/checkPaymentStatus';
 import getReportsByUserRoute from './routes/reports/getByUser';
@@ -35,15 +38,7 @@ import createSubscriptionSession from './routes/stripe/createUserSubscription';
 
 
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
-import askRouter from './routes/ai/ask';
-
-import askGptRouter from './routes/ai/ask-gpt';
-
-
-
-
-
-
+import askAiRoute from './routes/ai/ask_ai';
 
 
 dotenv.config();
@@ -52,7 +47,7 @@ const app = express();
 app.use(cors());
 
 //  Stripe webhook needs raw body
-app.use('/api/stripe/webhook', stripeWebhookRouter);
+app.use('/api/stripe/webhook', stripeWebhook);
 
 // All other routes can use JSON body parser
 app.use(express.json());
@@ -94,7 +89,7 @@ app.use('/api', checkPaymentStatusRouter);
 
 //Stripe for user subscription
 app.use('/api/stripe/create-subscription-session', createSubscriptionSession);
-app.use('/api/stripe/webhook', webhook);
+
 
 // live geo data
 app.use('/api/property', loopnetRoutes);
@@ -105,14 +100,7 @@ app.use('/api/usage/by-user', getUsageByUserRoute);
 
 
 //ASK
-app.use('/api/ai', askRouter);
-
-app.use('/api/ai/ask-gpt', askGptRouter);
-
-
-
-
-
+app.use('/api/ask_ai', askAiRoute);
 
 
 

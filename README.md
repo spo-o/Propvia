@@ -10,6 +10,9 @@ npm install --save-dev @types/cors
 npx tsc --init  
 npm install --save-dev typescript ts-node-dev @types/node @types/express  
 npm install express cors dotenv @supabase/supabase-js
+npm install zod uuid
+npm install --save-dev @types/uuid
+
 ```
 
 # tsconfig.json:

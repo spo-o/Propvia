@@ -45,6 +45,12 @@ import AskDashboard from './pages/askAiPages/AskDashboard';
 import QueryLimitReached from './pages/askAiPages/QueryLimitReached';
 import ForgotPassword from './pages/ForgotPassword';
 
+import { supabase } from './lib/supabaseClient';
+import { useEffect } from 'react';
+
+
+
+
 const queryClient = new QueryClient();
 
 function AppContent() {
@@ -55,7 +61,19 @@ function AppContent() {
   const [showSavedScenarios, setShowSavedScenarios] = useState(false);
   const location = useLocation();
 
-  // Don't show footer on platform pages
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (user) {
+        localStorage.setItem('user_id', user.id);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchUserId();
+    }
+  }, [isAuthenticated]);
+
   const hideFooter = ['/platform'].includes(location.pathname);
 
   const handleOpenSavedScenarios = () => {
@@ -109,13 +127,10 @@ function AppContent() {
     <div className="flex-1 flex">
       {showSidebar && <Sidebar />}
       <main className={`flex-1 flex flex-col min-h-0 ${showSidebar ? 'lg:ml-10' : ''}`}>
-        <div className="flex-1 pt-16">
-          {component}
-        </div>
+        <div className="flex-1 pt-16">{component}</div>
       </main>
     </div>
   );
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header 
@@ -253,6 +268,7 @@ function AppContent() {
       {!hideFooter && <Footer />}
     </div>
   );
+
 }
 
 export default function App() {

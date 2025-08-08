@@ -25,12 +25,17 @@ export interface AuthResponse {
   session: Session;
 }
 
+// Stripe redirect response
+interface StripeRedirect {
+  url: string;
+}
+
 export async function signup(
   email: string,
   password: string,
   profile: Record<string, any>,
   plan: string
-): Promise<UserResponse> {
+): Promise<UserResponse | StripeRedirect> {
   const payload = {
     email,
     password,
@@ -41,7 +46,7 @@ export async function signup(
       company: profile.company,
       role: profile.role,
     },
-    plan, // include plan in the root of the payload
+    plan,
   };
 
   const res = await fetch('/api/auth/signup', {
@@ -59,16 +64,13 @@ export async function signup(
 
   const responseData = await res.json();
 
-  // Redirect to Stripe if paid plan
+  // Return redirect to frontend for handling
   if (responseData.url) {
-    window.location.href = responseData.url;
-    return new Promise(() => {}); // Stop execution after redirect
+    return { url: responseData.url };
   }
 
   return responseData;
 }
-
-
 
 export async function login(
   email: string,
@@ -88,13 +90,11 @@ export async function login(
   return res.json();
 }
 
-export async function sendPasswordReset(
-  email: string,
-): Promise<AuthResponse> {
+export async function sendPasswordReset(email: string): Promise<AuthResponse> {
   const res = await fetch('/api/auth/passwordReset', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email}),
+    body: JSON.stringify({ email }),
   });
 
   if (!res.ok) {
@@ -108,12 +108,10 @@ export async function sendPasswordReset(
 export const getAdminRole = async (token: string) => {
   const res = await fetch('/api/user/role', {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!res.ok) throw new Error('Failed to fetch role');
   return await res.json();
 };
-
-
