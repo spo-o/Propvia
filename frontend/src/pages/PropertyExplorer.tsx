@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilterType, Property, SavedScenario } from "../types";
 import { properties } from "../data/mockData";
@@ -21,6 +21,7 @@ import PropertyList from "../components/PropertyList";
 import PropertyAnalysisDialog from "../components/PropertyAnalysisDialog";
 import CustomPropertyForm from "../components/CustomPropertyForm";
 import { AnimatePresence, motion } from "framer-motion";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 interface PropertyExplorerProps {
   onSaveScenario: (scenario: SavedScenario) => void;
@@ -34,6 +35,8 @@ export default function PropertyExplorer({
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(true)
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
   const { isAuthenticated } = useAuthStore();
@@ -46,11 +49,34 @@ export default function PropertyExplorer({
     { key: "minSquareFeet", value: 0, title: "Min SQFT", isActive: false },
   ]);
 
+  //fetch all properties on render
+  useEffect(() => {
+    async function fetchProperties() {
+      try {
+        // console.log("Fetching properties from backend...");
+        const res = await fetch("/api/property?page=1&pageSize=100");
+        const json = await res.json();
+        const fetched: Property[] = json.data || [];
+        // console.log("✅ Fetched properties:", fetched.length);
+        setAllProperties(fetched);
+      } catch (err) {
+        console.error("❌ Error fetching properties:", err);
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProperties();
+  }, []);
+
   const filteredProperties = useMemo(() => {
+    if(isLoading) return []
     let newProperties = [...properties];
     //check matches for the search term
-    if(searchTerm){
-      newProperties = newProperties.filter(p => p.address.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (searchTerm) {
+      newProperties = newProperties.filter(p =>
+        p.address.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
     // check matches for each filter
     allFilters.forEach(filter => {
@@ -85,7 +111,7 @@ export default function PropertyExplorer({
       }
     });
     return newProperties;
-  }, [searchTerm, allFilters]);
+  }, [searchTerm, allFilters, allProperties, isLoading]);
 
   const handlePropertySelect = useCallback(
     (property: Property) => {
@@ -108,26 +134,30 @@ export default function PropertyExplorer({
   };
 
   const removeFilter = (filter: FilterType) => {
-    const newFilters = [...allFilters]
+    const newFilters = [...allFilters];
     // find the index of the filter that was disabled
-    const index = newFilters.findIndex(f => f.key === filter.key)
+    const index = newFilters.findIndex(f => f.key === filter.key);
     // reset the filter to the default values
-    if(newFilters[index].key === 'propertyType'){
-      newFilters[index].value = 'all'
+    if (newFilters[index].key === "propertyType") {
+      newFilters[index].value = "all";
     } else {
-      newFilters[index].value = 0
+      newFilters[index].value = 0;
     }
-    newFilters[index].isActive = false
-    setAllFilters(newFilters)
-  }
+    newFilters[index].isActive = false;
+    setAllFilters(newFilters);
+  };
 
   const activateFilter = (filter: FilterType, value: string | number) => {
     const newFilters = [...allFilters];
     // find the index of the filter that was changed
     const index = newFilters.findIndex(f => f.key === filter.key);
-    newFilters[index].value = value
-    newFilters[index].isActive = true
-    setAllFilters(newFilters)
+    newFilters[index].value = value;
+    newFilters[index].isActive = true;
+    setAllFilters(newFilters);
+  };
+
+  if(isLoading){
+    return <LoadingSpinner/>
   }
 
   return (
@@ -142,10 +172,15 @@ export default function PropertyExplorer({
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Property Explorer</h1>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Property Explorer
+                </h1>
                 <div className="flex items-center space-x-4 mt-1">
                   <span className="text-sm text-gray-600">
-                    <span className="font-semibold text-blue-600">{filteredProperties.length}</span> properties
+                    <span className="font-semibold text-blue-600">
+                      {filteredProperties.length}
+                    </span>{" "}
+                    properties
                   </span>
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -261,31 +296,47 @@ export default function PropertyExplorer({
                 <div className="mt-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50/50 rounded-xl border border-gray-200">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Price Range
+                      </label>
                       <div className="space-y-2">
                         <input
                           type="number"
                           placeholder="Min price"
                           className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                          value={allFilters[0].value || ''}
-                          onChange={e => activateFilter(allFilters[0], Number(e.target.value))}
+                          value={allFilters[0].value || ""}
+                          onChange={e =>
+                            activateFilter(
+                              allFilters[0],
+                              Number(e.target.value)
+                            )
+                          }
                         />
                         <input
                           type="number"
                           placeholder="Max price"
                           className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                          value={allFilters[1].value || ''}
-                          onChange={e => activateFilter(allFilters[1], Number(e.target.value))}
+                          value={allFilters[1].value || ""}
+                          onChange={e =>
+                            activateFilter(
+                              allFilters[1],
+                              Number(e.target.value)
+                            )
+                          }
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Property Type
+                      </label>
                       <select
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                         value={allFilters[2].value}
-                        onChange={e => activateFilter(allFilters[2], e.target.value)}
+                        onChange={e =>
+                          activateFilter(allFilters[2], e.target.value)
+                        }
                       >
                         <option value="all">All Types</option>
                         <option value="commercial">Commercial</option>
@@ -294,20 +345,30 @@ export default function PropertyExplorer({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Min Square Feet</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Min Square Feet
+                      </label>
                       <input
                         type="number"
                         placeholder="Min sqft"
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
-                        value={allFilters[3].value || ''}
-                        onChange={e => activateFilter(allFilters[3], Number(e.target.value))}
+                        value={allFilters[3].value || ""}
+                        onChange={e =>
+                          activateFilter(allFilters[3], Number(e.target.value))
+                        }
                       />
                     </div>
 
                     <div className="flex items-end">
                       <button
                         onClick={() => {
-                          setAllFilters(prev => prev.map(f => ({ ...f, isActive: false, value: f.key === 'propertyType' ? 'all' : 0 })));
+                          setAllFilters(prev =>
+                            prev.map(f => ({
+                              ...f,
+                              isActive: false,
+                              value: f.key === "propertyType" ? "all" : 0,
+                            }))
+                          );
                         }}
                         className="w-full px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                       >
@@ -332,7 +393,7 @@ export default function PropertyExplorer({
               <div className="absolute inset-0 bg-white shadow-sm border-r border-gray-200/60 overflow-hidden">
                 <Map
                   properties={filteredProperties}
-                  selectedProperty={selectedProperty}
+                  selectedProperty={selectedProperty || undefined}
                   onPropertySelect={handlePropertySelect}
                 />
               </div>
@@ -345,7 +406,9 @@ export default function PropertyExplorer({
                   <Building2 className="w-5 h-5 text-blue-600" />
                   <span>Properties ({filteredProperties.length})</span>
                 </h3>
-                <p className="text-sm text-gray-600 mt-2">Click markers or browse cards below</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  Click markers or browse cards below
+                </p>
               </div>
               <div className="flex-1 overflow-auto">
                 <PropertyList
@@ -366,8 +429,13 @@ export default function PropertyExplorer({
                     <Grid className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">Property Gallery</h3>
-                    <p className="text-sm text-gray-600">Discover {filteredProperties.length} premium investment opportunities</p>
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      Property Gallery
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Discover {filteredProperties.length} premium investment
+                      opportunities
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">

@@ -1,39 +1,42 @@
 import { MapPin, Square, Wrench, Eye } from "lucide-react";
 import { Property } from "../types";
 
-
 type Props = {
   property: Property;
   onPropertySelect: (property: Property) => void;
-}
+};
 
-export default function MapPopup({
-  property,
-  onPropertySelect,
-}: Props) {
+export default function MapPopup({ property, onPropertySelect }: Props) {
   return (
     <div className="p-4 bg-white rounded-xl min-w-[250px] max-w-xs animate-fade-in-up">
-
       <h3 className="font-bold text-lg text-gray-800 mb-2 flex items-center">
         <MapPin className="w-5 h-5 mr-2 text-blue-600 flex-shrink-0" />
         {property.address}
       </h3>
+      {property.image && (
+        <img
+          src={property.image}
+          alt={property.address}
+          className="mt-2 rounded w-full h-32 object-cover"
+        />
+      )}
 
-      <div className="space-y-2 text-gray-700 mb-4 border-t border-b border-gray-200 py-3">
-        <p className="text-sm flex items-center">
+      <div className=" text-gray-700 border-t border-b border-gray-200 py-2">
+        <div className="text-sm flex items-center">
           <Square className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
           <span className="font-medium text-gray-800">
-            {property.sqft.toLocaleString() + " sqft"}
+            {" sqft: " + property.sqft?.toLocaleString() || "N/A"}
           </span>
-        </p>
+        </div>
 
-        <p className="text-sm flex items-center">
+        <div className="text-sm flex items-center">
           <Wrench className="w-4 h-4 mr-2 text-gray-500 flex-shrink-0" />
-          <span className="font-semibold text-red-600">
-            ${property.renovationCost.toLocaleString()}
-          </span>
-          <span className="ml-1 text-gray-500">(Renovation)</span>
-        </p>
+          <p className="ml-1 text-gray-500">Renovation:</p>
+          <span className="w-1" />
+          <p className="font-semibold text-red-600">
+            {`$${property.renovationCost?.toLocaleString() || "N/A"}`}
+          </p>
+        </div>
       </div>
 
       <button

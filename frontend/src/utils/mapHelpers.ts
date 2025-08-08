@@ -21,7 +21,7 @@ export function getBounds(properties: (Property | MapProperty)[]): [number, numb
 
 
 
-export function getMarkerIcon(property: Property, selectedProperty: Property | null): L.DivIcon {
+export function getMarkerIcon(property: Property, selectedProperty?: Property | null): L.DivIcon {
   const isSelected = selectedProperty?.id === property.id;
   const colorClass = property.zoning === 'Commercial' ? 'bg-red-500' : 'bg-purple-500';
 

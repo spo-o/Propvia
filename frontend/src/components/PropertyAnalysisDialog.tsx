@@ -3,6 +3,9 @@ import { Property, SavedScenario } from '../types';
 import { X, Building2, Users, DollarSign, TrendingUp, Download, Save, FileText, ChevronRight, Calendar, Ruler, Home, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { useToastStore } from '../store/toastStore';
+import RevenueChart from './charts/RevenueChart';
+import ExpensesPieChart from './charts/ExpensesPieChart';
+import BreakEvenBarChart from './charts/BreakEvenBarChart';
 
 interface PropertyAnalysisDialogProps {
   property: Property | null;
@@ -22,6 +25,7 @@ export default function PropertyAnalysisDialog({
   const showToast = useToastStore(state => state.showToast);
 
   if (!property) return null;
+  if(!property.analysis) return null
 
   const analysis = property.analysis[selectedBusiness];
 
@@ -295,21 +299,28 @@ export default function PropertyAnalysisDialog({
         return (
           <div className="space-y-6">
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">5-Year Financial Forecast</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                5-Year Financial Forecast
+              </h3>
               <div className="space-y-6">
                 <div>
                   <h4 className="font-medium mb-2">Revenue Projections</h4>
                   <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map((year) => (
+                    {[1, 2, 3, 4, 5].map(year => (
                       <div key={year}>
                         <div className="flex justify-between mb-1">
                           <span>Year {year}</span>
                           <span className="font-semibold">
-                            ${(analysis.monthlyProfit * 12 * (1 + year * 0.1)).toLocaleString()}
+                            $
+                            {(
+                              analysis.monthlyProfit *
+                              12 *
+                              (1 + year * 0.1)
+                            ).toLocaleString()}
                           </span>
                         </div>
                         <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full bg-green-500 rounded-full"
                             style={{ width: `${Math.min(100, year * 20)}%` }}
                           />
@@ -324,19 +335,27 @@ export default function PropertyAnalysisDialog({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-4 bg-white rounded-lg">
                       <div className="text-sm text-gray-600">Rent</div>
-                      <div className="text-lg font-semibold">${(property.renovationCost * 0.008).toLocaleString()}/mo</div>
+                      <div className="text-lg font-semibold">
+                        ${(property.renovationCost * 0.008).toLocaleString()}/mo
+                      </div>
                     </div>
                     <div className="p-4 bg-white rounded-lg">
                       <div className="text-sm text-gray-600">Utilities</div>
-                      <div className="text-lg font-semibold">${(property.sqft * 1.5).toLocaleString()}/mo</div>
+                      <div className="text-lg font-semibold">
+                        ${(property.sqft * 1.5).toLocaleString()}/mo
+                      </div>
                     </div>
                     <div className="p-4 bg-white rounded-lg">
                       <div className="text-sm text-gray-600">Insurance</div>
-                      <div className="text-lg font-semibold">${(property.renovationCost * 0.002).toLocaleString()}/mo</div>
+                      <div className="text-lg font-semibold">
+                        ${(property.renovationCost * 0.002).toLocaleString()}/mo
+                      </div>
                     </div>
                     <div className="p-4 bg-white rounded-lg">
                       <div className="text-sm text-gray-600">Maintenance</div>
-                      <div className="text-lg font-semibold">${(property.sqft * 0.75).toLocaleString()}/mo</div>
+                      <div className="text-lg font-semibold">
+                        ${(property.sqft * 0.75).toLocaleString()}/mo
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -346,25 +365,45 @@ export default function PropertyAnalysisDialog({
                   <div className="p-4 bg-white rounded-lg">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <div className="text-sm text-gray-600">Break-Even Point</div>
-                        <div className="text-lg font-semibold">{analysis.breakeven} months</div>
+                        <div className="text-sm text-gray-600">
+                          Break-Even Point
+                        </div>
+                        <div className="text-lg font-semibold">
+                          {analysis.breakeven} months
+                        </div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-600">Initial Investment</div>
-                        <div className="text-lg font-semibold">${analysis.startupCost.toLocaleString()}</div>
+                        <div className="text-sm text-gray-600">
+                          Initial Investment
+                        </div>
+                        <div className="text-lg font-semibold">
+                          ${analysis.startupCost.toLocaleString()}
+                        </div>
                       </div>
                     </div>
                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-blue-500 rounded-full"
                         style={{ width: `${(analysis.breakeven / 36) * 100}%` }}
                       />
                     </div>
                     <div className="text-sm text-gray-600 mt-2">
-                      Expected to break even in {analysis.breakeven} months at current projections
+                      Expected to break even in {analysis.breakeven} months at
+                      current projections
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4">
+              <div className="bg-white p-4 rounded-lg shadow w-full h-[250px] relative">
+                <RevenueChart monthlyProfit={5000} />
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow w-full h-[250px] relative">
+                <ExpensesPieChart sqft={1200} renovationCost={100000} />
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow w-full h-[250px] relative">
+                <BreakEvenBarChart breakevenMonths={18} />
               </div>
             </div>
           </div>
