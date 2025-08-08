@@ -4,7 +4,6 @@ import { supabaseAdmin } from '../../services/supabaseClient';
 import { z } from 'zod';
 import { askLLAMA } from '../../services/llamaClient';
 import { checkUsageLimit } from '../../utils/usageLimiter';
-import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 const router = express.Router();
@@ -30,7 +29,6 @@ type AskFilters = {
 
 router.post('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const startTime = Date.now();
     const parse = PromptSchema.safeParse(req.body);
     if (!parse.success) {
       res.status(400).json({ error: 'Invalid input' });
@@ -38,7 +36,6 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
     }
 
     const { userId, prompt } = parse.data;
-    const referenceId = uuidv4();
     console.log('ASK prompt:', prompt);
 
     // Step 0: Enforce quota
@@ -70,12 +67,23 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
 
     // Step 3: Build dynamic Supabase query
     const {
-      location, budget, purpose, preferences, zip,
-      squareFootage, yearBuilt, min_area, min_year_built,
-      max_area, max_year_built,
+      location,
+      budget,
+      purpose,
+      preferences,
+      zip,
+      squareFootage,
+      yearBuilt,
+      min_area,
+      min_year_built,
+      max_area,
+      max_year_built,
     } = filters;
 
-    let query = supabaseAdmin.from('enriched_properties').select('*').limit(100);
+    let query = supabaseAdmin
+      .from('enriched_properties')
+      .select('*')
+      .limit(100);
 
     if (budget) query = query.lte('askingPrice', budget);
     if (min_area) query = query.gte('squareFootage', min_area);
@@ -94,6 +102,21 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
 
     const { data, error } = await query;
 
+    console.log('[ASK] Final Supabase filters:');
+    console.log({
+      budget,
+      min_area,
+      max_area,
+      squareFootage,
+      min_year_built,
+      max_year_built,
+      yearBuilt,
+      location,
+      zip,
+      purpose,
+      preferences,
+    });
+
     if (error || !data) {
       console.error('Supabase error:', error);
       res.status(500).json({ error: 'Failed to fetch properties' });
@@ -102,6 +125,18 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
 
     // Step 4: Scoring
     const filtered = data.filter(p => !!p.address);
+    console.log('Filtered property count:', filtered.length);
+    console.log('Filtered data (before scoring):', filtered.map(p => ({
+      id: p.id,
+      address: p.address,
+      askingPrice: p.askingPrice,
+      squareFootage: p.squareFootage,
+      yearBuilt: p.yearBuilt,
+      roi: p.roi,
+      market: p.market,
+      growth: p.growth,
+    })));
+
     const scored = filtered
       .map((p) => {
         const score = (p.roi ?? 0) * 0.5 + (p.market ?? 0) * 0.3 + (p.growth ?? 0) * 0.2;
@@ -110,7 +145,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
       .sort((a, b) => b.score - a.score)
       .slice(0, 3);
 
-    // Step 5: Track usage if scored results exist
+    // Step 5: Track usage only after success
     if (scored.length > 0) {
       try {
         const { data: userData, error: fetchErr } = await supabaseAdmin
@@ -141,65 +176,10 @@ router.post('/', async (req: Request, res: Response, next: NextFunction): Promis
       }
     }
 
-    // Step 6: Save query to database
-    const processingTime = Date.now() - startTime;
-    const { data: savedQuery, error: saveError } = await supabaseAdmin
-      .from('ai_queries')
-      .insert({
-        user_id: userId,
-        query: prompt,
-        filters,
-        result_count: scored.length,
-        confidence: scored[0]?.score ?? 0.85,
-        processing_time: processingTime,
-        status: 'completed',
-        created_at: new Date().toISOString(),
-        reference_id: referenceId,
-      })
-      .select()
-      .single();
-
-    if (saveError) {
-      console.error('Error saving query:', saveError);
-    }
-
-    // Step 7: Insert into user_interactions table
-    try {
-      console.log("📌 Logging interaction for user:", userId);
-
-      const { error: interactionError } = await supabaseAdmin
-        .from('user_interactions')
-        .insert([
-          {
-            user_id: userId,
-            query_reference_id: referenceId,
-            created_at: new Date().toISOString(),
-          },
-        ]);
-
-      if (interactionError) {
-        console.warn('⚠️ Failed to log user interaction:', interactionError);
-      } else {
-        console.log(`✅ Logged interaction for user: ${userId}`);
-      }
-    } catch (err) {
-      console.error('❌ Error logging interaction:', err);
-    }
-
-    // Step 8: Final response
-    res.json({
-      success: true,
-      query: prompt,
-      filters,
-      results: scored,
-      confidence: scored[0]?.score ?? 0.85,
-      processingTime,
-      queryId: savedQuery?.id,
-      referenceId,
-    });
+    res.json(scored);
   } catch (err) {
     console.error('ASK route error:', err);
-    next(err);
+    res.status(500).json({ error: 'Unexpected server error' });
   }
 });
 
