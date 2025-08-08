@@ -1,32 +1,59 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useTheme } from '../ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-
-// Sample mock data with lat/lng
-const mockProperties = [
-  { id: '1', address: '123 Main St', lat: 40.7128, lng: -74.0060 },
-  { id: '2', address: '456 Elm Ave', lat: 34.0522, lng: -118.2437 },
-  { id: '3', address: '789 Oak Blvd', lat: 41.8781, lng: -87.6298 },
-];
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PropertyExplorerScreen() {
   const { colors } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
   const mapRef = useRef(null);
 
-  const filteredProperties = mockProperties.filter(property =>
-    property.address.toLowerCase().includes(searchTerm.toLowerCase())
+  // Fetch properties from Supabase REST API
+  const fetchProperties = async () => {
+    setLoading(true);
+    try {
+      const SUPABASE_URL = 'https://dvqjatjbjgcmosvuvhzj.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cWphdGpiamdjbW9zdnV2aHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5ODE1MTEsImV4cCI6MjA1OTU1NzUxMX0.VRt9c3LyWZSJobnp8t44b7sPnFAGhquhSiraCArA6xU';
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/liveproperties?select=*`, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      });
+      const data = await res.json();
+      setProperties(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Supabase REST fetch error:', error);
+      setProperties([]);
+    }
+    setLoading(false);
+  };
+
+  // Refresh when page is focused (entered or re-entered)
+  useFocusEffect(
+    useCallback(() => {
+      fetchProperties();
+    }, [])
   );
+
+  const filteredProperties = Array.isArray(properties)
+    ? properties.filter(property =>
+        property.address?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   const handleSelectProperty = (property) => {
     setSelectedProperty(property);
-    if (mapRef.current) {
+    if (mapRef.current && property.latitude && property.longitude) {
       mapRef.current.animateToRegion({
-        latitude: property.lat,
-        longitude: property.lng,
+        latitude: property.latitude,
+        longitude: property.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       }, 1000);
@@ -40,7 +67,7 @@ export default function PropertyExplorerScreen() {
         Discover and analyze commercial properties
       </Text>
 
-      {/* Search Bar */}
+      {/* Search Bar with Refresh Button */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#5D6A75" style={styles.searchIcon} />
         <TextInput
@@ -50,6 +77,9 @@ export default function PropertyExplorerScreen() {
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
+        <TouchableOpacity onPress={fetchProperties} style={{ marginLeft: 8 }}>
+          <Ionicons name="refresh" size={22} color="#5D6A75" />
+        </TouchableOpacity>
       </View>
 
       {/* Embedded Map showing all markers */}
@@ -58,21 +88,30 @@ export default function PropertyExplorerScreen() {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
-          latitude: 39.8283,
-          longitude: -98.5795,
-          latitudeDelta: 30,
-          longitudeDelta: 30,
+          latitude: 42.3314,
+          longitude: -83.0458,
+          latitudeDelta: 0.15,
+          longitudeDelta: 0.15,
         }}
       >
         {filteredProperties.map((property) => (
-          <Marker
-            key={property.id}
-            coordinate={{ latitude: property.lat, longitude: property.lng }}
-            title={property.address}
-            pinColor={selectedProperty?.id === property.id ? 'blue' : 'red'}
-          />
+          property.latitude && property.longitude && (
+            <Marker
+              key={property.id}
+              coordinate={{ latitude: property.latitude, longitude: property.longitude }}
+              title={property.address}
+              pinColor={selectedProperty?.id === property.id ? 'blue' : 'red'}
+            />
+          )
         ))}
       </MapView>
+
+      {/* Loading indicator */}
+      {loading && (
+        <Text style={{ color: colors.text, textAlign: 'center', marginBottom: 10 }}>
+          Loading properties...
+        </Text>
+      )}
 
       {/* Property List */}
       <FlatList
