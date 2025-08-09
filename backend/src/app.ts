@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { Request, Response } from 'express';
 
 import signupRouter from './routes/auth/signup';
 import loginRouter from './routes/auth/login';
@@ -102,9 +103,9 @@ app.use('/api/usage/by-user', getUsageByUserRoute);
 //ASK
 app.use('/api/ask_ai', askAiRoute);
 
-app.get('/', (_req, res) => res.send('Propvia BE is running'));
-
-
+app.get('/', (_req: Request, res: Response) => {
+  res.send('Propvia BE is running');
+});
 
 
 const PORT = process.env.PORT || 5050;
