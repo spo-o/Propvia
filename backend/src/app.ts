@@ -102,6 +102,9 @@ app.use('/api/usage/by-user', getUsageByUserRoute);
 //ASK
 app.use('/api/ask_ai', askAiRoute);
 
+app.get('/', (_req, res) => res.send('Propvia BE is running'));
+
+
 
 
 const PORT = process.env.PORT || 5050;
