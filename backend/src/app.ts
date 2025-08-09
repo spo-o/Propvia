@@ -108,10 +108,9 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 app.use((req, res, next) => {
-  console.log("Request received on Render BE:", req.method, req.url);
+  console.log("Request received for Render BE:", req.method, req.url);
   next();
 });
-
 
 const PORT = Number(process.env.PORT) || 5050;
 
