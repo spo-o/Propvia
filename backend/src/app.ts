@@ -107,11 +107,16 @@ app.get('/', (_req: Request, res: Response) => {
   res.send('Propvia BE is running');
 });
 
-
-const PORT = process.env.PORT || 5050;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.use((req, res, next) => {
+  console.log("Request received on Render BE:", req.method, req.url);
+  next();
 });
 
+
+const PORT = Number(process.env.PORT) || 5050;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 
