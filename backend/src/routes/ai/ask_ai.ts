@@ -29,6 +29,7 @@ type AskFilters = {
 
 router.post('/', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    console.log('[ASK_AI] prompt for render:', req.body?.prompt);
     const parse = PromptSchema.safeParse(req.body);
     if (!parse.success) {
       res.status(400).json({ error: 'Invalid input' });

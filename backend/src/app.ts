@@ -50,6 +50,11 @@ app.use(cors());
 //  Stripe webhook needs raw body
 app.use('/api/stripe/webhook', stripeWebhook);
 
+app.use((req, res, next) => {
+  console.log("Request received for Render BE:", req.method, req.url);
+  next();
+});
+
 // All other routes can use JSON body parser
 app.use(express.json());
 
@@ -107,10 +112,7 @@ app.get('/', (_req: Request, res: Response) => {
   res.send('Propvia BE is running');
 });
 
-app.use((req, res, next) => {
-  console.log("Request received for Render BE:", req.method, req.url);
-  next();
-});
+
 
 const PORT = Number(process.env.PORT) || 5050;
 
