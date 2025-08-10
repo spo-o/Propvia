@@ -3,26 +3,23 @@ import { supabaseAdmin } from '../../services/supabaseClient';
 
 const router = express.Router();
 
-router.post(
-  '/',
-  async (req: Request, res: Response): Promise<void> => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const { data, error } = await supabaseAdmin
       .from('properties')
       .select('*');
 
-    if (error) {
-      res.status(500).json({ error: error.message });
+    if (error || !data) {
+      res.status(500).json({ error: error?.message || 'Data not found' });
+      return;
     }
 
     const filtered = data.filter(
       (p) => typeof p.latitude === 'number' && typeof p.longitude === 'number'
     );
 
-     res.status(200).json(filtered);
+    res.status(200).json(filtered);
   } catch (err: any) {
-     res.status(500).json({ error: 'Unexpected error occurred' });
+    res.status(500).json({ error: 'Unexpected error occurred' });
   }
 });
-
-export default router;
