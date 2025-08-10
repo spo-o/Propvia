@@ -110,7 +110,7 @@ export default function CustomPropertyForm({
 
 
       // create the checkout session
-      const checkoutRes = await fetch("http://localhost:5050/api/checkout", {
+      const checkoutRes = await fetch("https://propvia-be.onrender.com/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -121,6 +121,7 @@ export default function CustomPropertyForm({
           formData: data, // full object
         }),
       });
+      
 
       const checkoutJson = await checkoutRes.json();
 
