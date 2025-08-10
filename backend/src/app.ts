@@ -93,8 +93,7 @@ app.use('/api/team/updateRole', updateRoleRoute);
 // Stripe checkout for custom property analysis
 app.use('/api/checkout', stripeCheckoutRoute);
 app.use('/api/stripe', getStripeSessionDetailsRouter);
-app.use('/api/stripe/check-payment', checkPaymentStatusRouter);
-
+app.use('/api/stripe/', checkPaymentStatusRouter);
 
 //Stripe for user subscription
 app.use('/api/stripe/create-subscription-session', createSubscriptionSession);
