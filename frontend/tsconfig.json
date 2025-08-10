@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "jsx": "react-jsx",
+    "target": "es2020",
     "module": "commonjs",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   }
 }
+

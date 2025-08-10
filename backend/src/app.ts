@@ -41,6 +41,8 @@ import createSubscriptionSession from './routes/stripe/createUserSubscription';
 import getUsageByUserRoute from './routes/usage/getUsageByUser';
 import askAiRoute from './routes/ai/ask_ai';
 
+import path from 'path';
+
 
 dotenv.config();
 const app = express();
@@ -112,6 +114,15 @@ app.get('/', (_req: Request, res: Response) => {
   res.send('Propvia BE is running');
 });
 
+// ---- Serve built frontend (CommonJS-safe) ----
+const clientDist = path.resolve(__dirname, '../frontend/dist');
+app.use(express.static(clientDist));
+
+// Catch-all for client routes (but not /api/*)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(clientDist, 'index.html'));
+});
 
 
 const PORT = Number(process.env.PORT) || 5050;

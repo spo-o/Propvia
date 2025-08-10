@@ -156,8 +156,9 @@ router.post('/populate', async (req: Request, res: Response, next: NextFunction)
       });
 
       const liveResponse = await axios.get(
-        `http://localhost:${process.env.PORT || 5050}/api/property/live?${params.toString()}`
+        `${process.env.API_BASE_URL}/api/property/live?${params.toString()}`
       );
+      
 
       const listings = liveResponse.data;
       console.log(` Page ${page}: Fetched ${listings.length} listings`);
