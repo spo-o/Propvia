@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
+import fs from 'fs';
 
 import signupRouter from './routes/auth/signup';
 import loginRouter from './routes/auth/login';
@@ -110,18 +111,14 @@ app.use('/api/usage/by-user', getUsageByUserRoute);
 //ASK
 app.use('/api/ask_ai', askAiRoute);
 
-app.get('/', (_req: Request, res: Response) => {
-  res.send('Propvia BE is running');
-});
+
 
 // ---- Serve built frontend (CommonJS-safe) ----
+//  Serve static files first
 const clientDist = path.resolve(__dirname, '../frontend/dist');
 app.use(express.static(clientDist));
 
-// Catch-all for client routes (but not /api/*)
-import fs from 'fs';
-
-// only serve index.html if it exists
+//  Catch-all for frontend routes (not API)
 app.get('/{*any}', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
 
@@ -129,10 +126,10 @@ app.get('/{*any}', (req, res, next) => {
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    console.error('index.html not found:', indexPath);
     res.status(500).send('Frontend not built or missing.');
   }
 });
+
 
 
 const PORT = Number(process.env.PORT) || 5050;
