@@ -119,7 +119,7 @@ const clientDist = path.resolve(__dirname, 'client');
 app.use(express.static(clientDist));
 
 // Catch-all for frontend routes (not API)
-app.get('/{*}', (req, res, next) => {
+app.get('/{*any}', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
 
   const indexPath = path.join(clientDist, 'index.html');
