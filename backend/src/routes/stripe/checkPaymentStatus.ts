@@ -6,7 +6,7 @@ dotenv.config();
 
 const router = Router();
 
-router.get('/:requestId', async (req: Request, res: Response): Promise<void> => {
+router.get('/check-payment-status/:requestId', async (req: Request, res: Response): Promise<void> => {
     const { requestId } = req.params;
 
     if (!requestId) {
