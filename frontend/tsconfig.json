@@ -2,14 +2,13 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "target": "es2020",
-    "module": "commonjs",
-    "rootDir": "./src",
+    "module": "esnext",                 //  needed for import.meta
+    "moduleResolution": "bundler",     //  best for Vite
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src"]
 }
-
