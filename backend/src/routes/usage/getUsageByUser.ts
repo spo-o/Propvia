@@ -18,7 +18,7 @@ const PLAN_LIMITS: Record<string, { analysis: number; ask: number }> = {
   },
 };
 
-router.get('/:userId', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.get('/user/:userId', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { userId } = req.params;
 
   console.log(' /by-user called for:', userId);

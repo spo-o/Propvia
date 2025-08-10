@@ -3,7 +3,7 @@ import { supabaseAdmin } from '../../services/supabaseClient';
 
 const router = express.Router();
 
-router.delete('/:id', async (req: Request<{ id: string }>, res: Response) => {
+router.delete('/delete/:id', async (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params;
 
   const { error } = await supabaseAdmin

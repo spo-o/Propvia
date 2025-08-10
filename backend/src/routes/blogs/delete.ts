@@ -6,7 +6,7 @@ import { authMiddleware, AuthenticatedRequest } from '../../middlewares/authMidd
 const router = Router();
 
 router.delete(
-  '/:id',
+  '/delete/:id',
   authMiddleware,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     const { id } = req.params;

@@ -3,7 +3,7 @@ import { supabaseAdmin } from '../../services/supabaseClient';
 
 const router = express.Router();
 
-router.put('/:id', async (req: Request<{ id: string }>, res: Response) => {
+router.put('/delete-role/:id', async (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params;
   const { role } = req.body;
 
