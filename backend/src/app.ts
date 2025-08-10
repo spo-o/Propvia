@@ -14,14 +14,13 @@ import generateBlogRouter from './routes/blogs/generate';
 import publishRoute from './routes/blogs/publish';
 import deleteRoute from './routes/blogs/delete';
 import updateRoute from './routes/blogs/update';
-import aiAskRouter from './routes/ai/ask';
 import inviteRoute from './routes/team/invite';
 import acceptRoute from './routes/team/accept';
 import removeRoute from './routes/team/remove';
 import updateRoleRoute from './routes/team/updateRole';
 import savePropertyRouter from './routes/property/saveProperty';
 import stripeCheckoutRoute from './routes/stripe/createCheckoutSession';
-import askAiRouter from './routes/ai/ask_ai';
+
 
 
 import loopnetRoutes from './routes/property/loopnet';
@@ -120,9 +119,19 @@ const clientDist = path.resolve(__dirname, '../frontend/dist');
 app.use(express.static(clientDist));
 
 // Catch-all for client routes (but not /api/*)
-app.get('*', (req, res, next) => {
+import fs from 'fs';
+
+// only serve index.html if it exists
+app.get('/{*any}', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(clientDist, 'index.html'));
+
+  const indexPath = path.join(clientDist, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.error('index.html not found:', indexPath);
+    res.status(500).send('Frontend not built or missing.');
+  }
 });
 
 
