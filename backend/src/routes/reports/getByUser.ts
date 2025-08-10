@@ -3,7 +3,7 @@ import { supabaseAdmin } from '../../services/supabaseClient';
 
 const router = express.Router();
 
-router.get('/:userEmail', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/user/:userEmail', async (req: Request, res: Response, next: NextFunction) => {
   const { userEmail } = req.params;
 
   if (!userEmail) {
